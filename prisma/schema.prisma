@@ -1,0 +1,91 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
+  password  String
+  name      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  websites  Website[]
+  payments  Payment[]
+}
+
+model Website {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  uniqueUrl   String    @unique
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String?
+  description String?
+  isPublished Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  pages       Page[]
+  payment     Payment?
+}
+
+model Page {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  websiteId   String   @db.ObjectId
+  website     Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  pageNumber  Int      // 1, 2, 3, 4
+  enabled     Boolean  @default(true)
+  
+  // Page 1: Text Message
+  textContent String?
+  
+  // Page 2: Video
+  videoUrl    String?
+  
+  // Page 3: Image + Text + Audio
+  imageUrl    String?
+  audioUrl    String?
+  
+  // Page 4: Image Gallery
+  imageUrls   String[]
+  hasAudio    Boolean  @default(false)
+  hasVideo    Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([websiteId, pageNumber])
+}
+
+model Payment {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @db.ObjectId
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  websiteId         String   @unique @db.ObjectId
+  website           Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  
+  amount            Float
+  currency          String   @default("INR")
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  status            String   @default("pending") // pending, completed, failed
+  
+  // Selected pages
+  page1Enabled      Boolean  @default(false)
+  page2Enabled      Boolean  @default(false)
+  page3Enabled      Boolean  @default(false)
+  page3HasAudio     Boolean  @default(false)
+  page4Enabled      Boolean  @default(false)
+  page4HasAudio     Boolean  @default(false)
+  page4HasVideo     Boolean  @default(false)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
