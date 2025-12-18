@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { FaHeart, FaPlay } from 'react-icons/fa'
+import { FaHeart, FaPlay, FaLock, FaMusic } from 'react-icons/fa'
 
 interface TemplatePreviewProps {
   templateId: string
@@ -15,8 +15,16 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
       return <TextWithImagePreview />
     case 'text-with-video':
       return <TextWithVideoPreview />
+    case 'text-with-audio':
+      return <TextWithAudioPreview />
     case 'photo-gallery':
       return <PhotoGalleryPreview />
+    case 'treasure-hunt':
+      return <TreasureHuntPreview />
+    case 'treasure-hunt-image':
+      return <TreasureHuntImagePreview />
+    case 'treasure-hunt-video':
+      return <TreasureHuntVideoPreview />
     default:
       return null
   }
@@ -133,6 +141,55 @@ function TextWithVideoPreview() {
   )
 }
 
+// Text with Audio Template Preview
+function TextWithAudioPreview() {
+  return (
+    <div className="min-h-[600px] bg-gradient-to-br from-teal-900 via-teal-700 to-cyan-700 flex items-center justify-center p-8">
+      <div className="max-w-4xl text-center">
+        <motion.div
+          initial={{ scale: 0, rotate: 180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: 0.3, type: "spring" }}
+        >
+          <div className="text-8xl mb-8">🎵</div>
+        </motion.div>
+        
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="text-4xl md:text-6xl font-bold mb-6 text-white"
+        >
+          Listen to My Heart
+        </motion.h1>
+        
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+          className="text-xl md:text-2xl mb-8 text-white/90"
+        >
+          I recorded this special message just for you. Put on your headphones and listen with your heart.
+        </motion.p>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border-2 border-white/20"
+        >
+          <div className="text-center">
+            <div className="text-4xl mb-4">🎧</div>
+            <div className="w-full h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <p className="text-sm text-white/80">Audio Player Controls</p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
 // Photo Gallery Template Preview
 function PhotoGalleryPreview() {
   const images = [
@@ -181,6 +238,192 @@ function PhotoGalleryPreview() {
               className="rounded-xl shadow-xl w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
             />
           ))}
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
+// Treasure Hunt Template Preview
+function TreasureHuntPreview() {
+  return (
+    <div className="min-h-[600px] bg-gradient-to-br from-indigo-900 via-indigo-700 to-purple-700 flex items-center justify-center p-8">
+      <div className="max-w-4xl text-center">
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: 0.3, type: "spring" }}
+        >
+          <FaLock className="text-8xl mx-auto mb-8 text-yellow-300" />
+        </motion.div>
+        
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="text-4xl md:text-6xl font-bold mb-8 text-white"
+        >
+          Solve the Clues! 🔐
+        </motion.h1>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="space-y-4 mb-8"
+        >
+          {['Where we first met...', 'Your favorite place...', 'Our special song...'].map((clue, idx) => (
+            <div
+              key={idx}
+              className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20"
+            >
+              <div className="flex items-start gap-4">
+                <span className="text-2xl font-bold text-yellow-300">#{idx + 1}</span>
+                <p className="text-lg text-left flex-1">{clue}</p>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+          className="max-w-md mx-auto"
+        >
+          <input
+            type="text"
+            placeholder="Enter password to unlock..."
+            className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 text-center text-lg mb-4"
+            readOnly
+          />
+          <div className="text-sm text-white/60">
+            🎵 Hidden audio message + secret text revealed after unlock!
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
+// Treasure Hunt + Image Template Preview
+function TreasureHuntImagePreview() {
+  return (
+    <div className="min-h-[600px] bg-gradient-to-br from-violet-900 via-violet-700 to-purple-700 flex items-center justify-center p-8">
+      <div className="max-w-4xl text-center">
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: 0.3, type: "spring" }}
+        >
+          <FaLock className="text-8xl mx-auto mb-8 text-yellow-300" />
+        </motion.div>
+        
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="text-4xl md:text-6xl font-bold mb-8 text-white"
+        >
+          Solve the Clues! 🔐
+        </motion.h1>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="space-y-4 mb-8"
+        >
+          {['First hint...', 'Second hint...', 'Final clue...'].map((clue, idx) => (
+            <div
+              key={idx}
+              className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20"
+            >
+              <div className="flex items-start gap-4">
+                <span className="text-2xl font-bold text-yellow-300">#{idx + 1}</span>
+                <p className="text-lg text-left flex-1">{clue}</p>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+          className="max-w-md mx-auto"
+        >
+          <input
+            type="text"
+            placeholder="Enter password to unlock..."
+            className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 text-center text-lg mb-4"
+            readOnly
+          />
+          <div className="text-sm text-white/60">
+            🖼️ Hidden image + secret message revealed after unlock!
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
+// Treasure Hunt + Video Template Preview
+function TreasureHuntVideoPreview() {
+  return (
+    <div className="min-h-[600px] bg-gradient-to-br from-fuchsia-900 via-fuchsia-700 to-purple-700 flex items-center justify-center p-8">
+      <div className="max-w-4xl text-center">
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: 0.3, type: "spring" }}
+        >
+          <FaLock className="text-8xl mx-auto mb-8 text-yellow-300" />
+        </motion.div>
+        
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="text-4xl md:text-6xl font-bold mb-8 text-white"
+        >
+          Solve the Clues! 🔐
+        </motion.h1>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="space-y-4 mb-8"
+        >
+          {['Think back to when...', 'Remember the place...', 'Our special moment...'].map((clue, idx) => (
+            <div
+              key={idx}
+              className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20"
+            >
+              <div className="flex items-start gap-4">
+                <span className="text-2xl font-bold text-yellow-300">#{idx + 1}</span>
+                <p className="text-lg text-left flex-1">{clue}</p>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+          className="max-w-md mx-auto"
+        >
+          <input
+            type="text"
+            placeholder="Enter password to unlock..."
+            className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 text-center text-lg mb-4"
+            readOnly
+          />
+          <div className="text-sm text-white/60">
+            🎥 Hidden video message + secret text revealed after unlock!
+          </div>
         </motion.div>
       </div>
     </div>

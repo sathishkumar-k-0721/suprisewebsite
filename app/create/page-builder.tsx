@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaImage, FaVideo, FaFileAlt, FaCheck, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+import { FaImage, FaVideo, FaFileAlt, FaCheck, FaArrowLeft, FaArrowRight, FaLock } from 'react-icons/fa'
 
 // Template mapping from templates page
 const TEMPLATE_CONFIG: Record<string, {
   name: string
   description: string
-  contentTypes: ('text' | 'image' | 'video' | 'gallery')[]
+  contentTypes: ('text' | 'image' | 'video' | 'gallery' | 'clues' | 'password' | 'audio')[]
 }> = {
   'text-only': {
     name: 'Text Only',
@@ -25,10 +25,30 @@ const TEMPLATE_CONFIG: Record<string, {
     description: 'Message with a video',
     contentTypes: ['text', 'video']
   },
+  'text-with-audio': {
+    name: 'Text with Audio',
+    description: 'Message with audio',
+    contentTypes: ['text', 'audio']
+  },
   'photo-gallery': {
     name: 'Photo Gallery',
     description: 'Multiple photos slideshow',
     contentTypes: ['text', 'gallery']
+  },
+  'treasure-hunt': {
+    name: 'Treasure Hunt+Audio',
+    description: 'Interactive hunt with clues and password',
+    contentTypes: ['clues', 'password', 'text', 'audio']
+  },
+  'treasure-hunt-image': {
+    name: 'Treasure Hunt+Image',
+    description: 'Hunt with clues revealing image',
+    contentTypes: ['clues', 'password', 'text', 'image']
+  },
+  'treasure-hunt-video': {
+    name: 'Treasure Hunt+Video',
+    description: 'Hunt with clues revealing video',
+    contentTypes: ['clues', 'password', 'text', 'video']
   }
 }
 
@@ -39,6 +59,11 @@ export interface PageContent {
   image: File | null
   video: File | null
   galleryImages: File[]
+  clue1?: string
+  clue2?: string
+  clue3?: string
+  password?: string
+  audio?: File | null
 }
 
 interface PageBuilderProps {
@@ -53,6 +78,11 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
   const [currentImage, setCurrentImage] = useState<File | null>(null)
   const [currentVideo, setCurrentVideo] = useState<File | null>(null)
   const [currentGalleryImages, setCurrentGalleryImages] = useState<File[]>([])
+  const [currentClue1, setCurrentClue1] = useState('')
+  const [currentClue2, setCurrentClue2] = useState('')
+  const [currentClue3, setCurrentClue3] = useState('')
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [currentAudio, setCurrentAudio] = useState<File | null>(null)
 
   // Load selected templates from payment
   useEffect(() => {
@@ -107,6 +137,21 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
       return
     }
 
+    if (currentTemplate.contentTypes.includes('clues') && (!currentClue1.trim() || !currentClue2.trim() || !currentClue3.trim())) {
+      alert('Please enter all 3 clues!')
+      return
+    }
+
+    if (currentTemplate.contentTypes.includes('password') && !currentPassword.trim()) {
+      alert('Please set a password!')
+      return
+    }
+
+    if (currentTemplate.contentTypes.includes('audio') && !currentAudio) {
+      alert('Please upload an audio file!')
+      return
+    }
+
     // Save current page content
     const updatedPages = [...pages]
     updatedPages[currentPageIndex] = {
@@ -114,7 +159,12 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
       text: currentText,
       image: currentImage,
       video: currentVideo,
-      galleryImages: currentGalleryImages
+      galleryImages: currentGalleryImages,
+      clue1: currentClue1,
+      clue2: currentClue2,
+      clue3: currentClue3,
+      password: currentPassword,
+      audio: currentAudio
     }
     setPages(updatedPages)
 
@@ -127,6 +177,11 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
       setCurrentImage(nextPage.image)
       setCurrentVideo(nextPage.video)
       setCurrentGalleryImages(nextPage.galleryImages)
+      setCurrentClue1(nextPage.clue1 || '')
+      setCurrentClue2(nextPage.clue2 || '')
+      setCurrentClue3(nextPage.clue3 || '')
+      setCurrentPassword(nextPage.password || '')
+      setCurrentAudio(nextPage.audio || null)
     } else {
       // All pages completed
       onComplete(updatedPages)
@@ -143,7 +198,12 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
         text: currentText,
         image: currentImage,
         video: currentVideo,
-        galleryImages: currentGalleryImages
+        galleryImages: currentGalleryImages,
+        clue1: currentClue1,
+        clue2: currentClue2,
+        clue3: currentClue3,
+        password: currentPassword,
+        audio: currentAudio
       }
       setPages(updatedPages)
       
@@ -154,10 +214,15 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
       setCurrentImage(prevPage.image)
       setCurrentVideo(prevPage.video)
       setCurrentGalleryImages(prevPage.galleryImages)
+      setCurrentClue1(prevPage.clue1 || '')
+      setCurrentClue2(prevPage.clue2 || '')
+      setCurrentClue3(prevPage.clue3 || '')
+      setCurrentPassword(prevPage.password || '')
+      setCurrentAudio(prevPage.audio || null)
     }
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video' | 'gallery') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video' | 'gallery' | 'audio') => {
     const files = e.target.files
     if (files) {
       if (type === 'image') {
@@ -166,6 +231,8 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
         setCurrentVideo(files[0])
       } else if (type === 'gallery') {
         setCurrentGalleryImages(Array.from(files).slice(0, 5)) // Max 5 images
+      } else if (type === 'audio') {
+        setCurrentAudio(files[0])
       }
     }
   }
@@ -265,9 +332,16 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
                       className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
                     />
                     {currentImage && (
-                      <p className="text-sm text-green-600 mt-2 flex items-center gap-2">
-                        <FaCheck /> Selected: {currentImage.name}
-                      </p>
+                      <div className="mt-4">
+                        <p className="text-sm text-green-600 mb-2 flex items-center gap-2">
+                          <FaCheck /> Selected: {currentImage.name}
+                        </p>
+                        <img
+                          src={URL.createObjectURL(currentImage)}
+                          alt="Preview"
+                          className="w-full max-w-md rounded-lg shadow-lg"
+                        />
+                      </div>
                     )}
                   </div>
                 )}
@@ -286,9 +360,16 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
                       className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
                     />
                     {currentVideo && (
-                      <p className="text-sm text-green-600 mt-2 flex items-center gap-2">
-                        <FaCheck /> Selected: {currentVideo.name}
-                      </p>
+                      <div className="mt-4">
+                        <p className="text-sm text-green-600 mb-2 flex items-center gap-2">
+                          <FaCheck /> Selected: {currentVideo.name}
+                        </p>
+                        <video
+                          src={URL.createObjectURL(currentVideo)}
+                          controls
+                          className="w-full max-w-2xl rounded-lg shadow-lg"
+                        />
+                      </div>
                     )}
                   </div>
                 )}
@@ -308,10 +389,143 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
                       className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
                     />
                     {currentGalleryImages.length > 0 && (
-                      <p className="text-sm text-green-600 mt-2 flex items-center gap-2">
-                        <FaCheck /> Selected: {currentGalleryImages.length} image(s)
-                      </p>
+                      <div className="mt-4">
+                        <p className="text-sm text-green-600 mb-2 flex items-center gap-2">
+                          <FaCheck /> Selected: {currentGalleryImages.length} image(s)
+                        </p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          {currentGalleryImages.map((img, idx) => (
+                            <img
+                              key={idx}
+                              src={URL.createObjectURL(img)}
+                              alt={`Gallery ${idx + 1}`}
+                              className="w-full h-32 object-cover rounded-lg shadow-md"
+                            />
+                          ))}
+                        </div>
+                      </div>
                     )}
+                  </div>
+                )}
+
+                {/* Treasure Hunt - Clues */}
+                {currentTemplate.contentTypes.includes('clues') && (
+                  <div className="space-y-4">
+                    <div className="bg-indigo-50 p-4 rounded-lg border-2 border-indigo-200">
+                      <FaLock className="inline mr-2 text-indigo-600" />
+                      <span className="font-semibold text-indigo-900">Enter 3 Clues</span>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Clue 1
+                      </label>
+                      <input
+                        type="text"
+                        value={currentClue1}
+                        onChange={(e) => setCurrentClue1(e.target.value)}
+                        placeholder="Enter the first clue..."
+                        className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white"
+                        maxLength={200}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Clue 2
+                      </label>
+                      <input
+                        type="text"
+                        value={currentClue2}
+                        onChange={(e) => setCurrentClue2(e.target.value)}
+                        placeholder="Enter the second clue..."
+                        className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white"
+                        maxLength={200}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Clue 3
+                      </label>
+                      <input
+                        type="text"
+                        value={currentClue3}
+                        onChange={(e) => setCurrentClue3(e.target.value)}
+                        placeholder="Enter the third clue..."
+                        className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white"
+                        maxLength={200}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Password */}
+                {currentTemplate.contentTypes.includes('password') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FaLock className="inline mr-2" />
+                      Set Unlock Password
+                    </label>
+                    <input
+                      type="text"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter the password to unlock the content..."
+                      className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white"
+                      maxLength={50}
+                    />
+                    <p className="text-sm text-gray-500 mt-2">
+                      User must enter this password to reveal the content
+                    </p>
+                  </div>
+                )}
+
+                {/* Hidden Text (revealed after password) */}
+                {currentTemplate.contentTypes.includes('text') && currentTemplate.contentTypes.includes('password') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FaFileAlt className="inline mr-2" />
+                      Hidden Message (shown after unlock)
+                    </label>
+                    <textarea
+                      value={currentText}
+                      onChange={(e) => setCurrentText(e.target.value)}
+                      placeholder="Write the hidden message that will be revealed after password unlock..."
+                      className="w-full h-32 p-4 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white resize-none"
+                      maxLength={1000}
+                    />
+                  </div>
+                )}
+
+                {/* Audio Upload */}
+                {currentTemplate.contentTypes.includes('audio') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FaVideo className="inline mr-2" />
+                      Upload Hidden Audio File
+                    </label>
+                    <input
+                      type="file"
+                      accept="audio/*"
+                      onChange={(e) => handleFileChange(e, 'audio')}
+                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                    />
+                    {currentAudio && (
+                      <div className="mt-4">
+                        <p className="text-sm text-green-600 mb-2 flex items-center gap-2">
+                          <FaCheck /> Selected: {currentAudio.name}
+                        </p>
+                        <audio
+                          src={URL.createObjectURL(currentAudio)}
+                          controls
+                          className="w-full"
+                        />
+                      </div>
+                    )}
+                    <p className="text-sm text-gray-500 mt-2">
+                      This audio will be hidden and only playable after password unlock
+                    </p>
                   </div>
                 )}
               </div>

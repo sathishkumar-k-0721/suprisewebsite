@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaHeart } from 'react-icons/fa'
+import { FaHeart, FaLock, FaUnlock, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import Link from 'next/link'
 
 interface Page {
@@ -12,9 +12,18 @@ interface Page {
   order: number
   content: {
     text: string
+    image?: string
+    video?: string
+    audio?: string
+    gallery?: string[]
     imageName?: string
     videoName?: string
     galleryCount?: number
+    clue1?: string
+    clue2?: string
+    clue3?: string
+    password?: string
+    audioName?: string
   }
 }
 
@@ -33,6 +42,10 @@ export default function WebsitePage() {
   const [currentPageIndex, setCurrentPageIndex] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [passwordInput, setPasswordInput] = useState('')
+  const [isUnlocked, setIsUnlocked] = useState(false)
+  const [showPasswordError, setShowPasswordError] = useState(false)
+  const [currentClueIndex, setCurrentClueIndex] = useState(0)
 
   useEffect(() => {
     const fetchWebsite = async () => {
@@ -53,16 +66,42 @@ export default function WebsitePage() {
     fetchWebsite()
   }, [websiteId])
 
-  // Auto-cycle through pages every 5 seconds
+  // Auto-cycle through pages every 5 seconds (but not for treasure-hunt)
   useEffect(() => {
     if (!website || website.pages.length === 0) return
+    
+    // Check if current page is treasure hunt variant
+    const currentPage = website.pages[currentPageIndex]
+    if (currentPage?.templateId?.startsWith('treasure-hunt')) return // Don't auto-cycle for treasure hunt
 
     const interval = setInterval(() => {
       setCurrentPageIndex((prev) => (prev + 1) % website.pages.length)
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [website])
+  }, [website, currentPageIndex])
+
+  // Auto-cycle through clues for treasure hunt (every 4 seconds)
+  useEffect(() => {
+    if (!website || website.pages.length === 0) return
+    
+    const currentPage = website.pages[currentPageIndex]
+    if (currentPage?.templateId?.startsWith('treasure-hunt') && !isUnlocked) {
+      const interval = setInterval(() => {
+        setCurrentClueIndex((prev) => (prev + 1) % 3) // Cycle through 3 clues
+      }, 4000)
+
+      return () => clearInterval(interval)
+    }
+  }, [website, currentPageIndex, isUnlocked])
+
+  // Reset states when page changes
+  useEffect(() => {
+    setPasswordInput('')
+    setIsUnlocked(false)
+    setShowPasswordError(false)
+    setCurrentClueIndex(0)
+  }, [currentPageIndex])
 
   if (loading) {
     return (
@@ -95,7 +134,40 @@ export default function WebsitePage() {
     'text-only': 'from-purple-900 via-purple-700 to-pink-700',
     'text-with-image': 'from-blue-900 via-blue-700 to-cyan-700',
     'text-with-video': 'from-pink-900 via-pink-700 to-red-700',
-    'photo-gallery': 'from-green-900 via-green-700 to-teal-700'
+    'text-with-audio': 'from-teal-900 via-teal-700 to-cyan-700',
+    'photo-gallery': 'from-green-900 via-green-700 to-teal-700',
+    'treasure-hunt': 'from-indigo-900 via-indigo-700 to-purple-700',
+    'treasure-hunt-image': 'from-violet-900 via-violet-700 to-purple-700',
+    'treasure-hunt-video': 'from-fuchsia-900 via-fuchsia-700 to-purple-700'
+  }
+
+  const handlePasswordSubmit = () => {
+    if (passwordInput.trim() === currentPage.content.password?.trim()) {
+      setIsUnlocked(true)
+      setShowPasswordError(false)
+      setPasswordInput('')
+    } else {
+      setShowPasswordError(true)
+      setTimeout(() => setShowPasswordError(false), 2000)
+    }
+  }
+
+  const goToNextPage = () => {
+    if (currentPageIndex < website.pages.length - 1) {
+      setCurrentPageIndex(currentPageIndex + 1)
+      setPasswordInput('')
+      setIsUnlocked(false)
+      setShowPasswordError(false)
+    }
+  }
+
+  const goToPrevPage = () => {
+    if (currentPageIndex > 0) {
+      setCurrentPageIndex(currentPageIndex - 1)
+      setPasswordInput('')
+      setIsUnlocked(false)
+      setShowPasswordError(false)
+    }
   }
 
   return (
@@ -111,6 +183,29 @@ export default function WebsitePage() {
           />
         ))}
       </div>
+
+      {/* Navigation Buttons - Left and Right */}
+      {website.pages.length > 1 && (
+        <>
+          <button
+            onClick={goToPrevPage}
+            disabled={currentPageIndex === 0}
+            className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50 p-4 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-label="Previous page"
+          >
+            <FaChevronLeft className="text-2xl" />
+          </button>
+          
+          <button
+            onClick={goToNextPage}
+            disabled={currentPageIndex === website.pages.length - 1}
+            className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 p-4 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-label="Next page"
+          >
+            <FaChevronRight className="text-2xl" />
+          </button>
+        </>
+      )}
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -154,12 +249,20 @@ export default function WebsitePage() {
                 transition={{ delay: 0.3 }}
                 className="relative"
               >
-                <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-2xl w-full h-[500px] flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="text-8xl mb-4">📷</div>
-                    <p className="text-sm opacity-75">{currentPage.content.imageName || 'Image'}</p>
+                {currentPage.content.image ? (
+                  <img
+                    src={currentPage.content.image}
+                    alt="Surprise"
+                    className="rounded-2xl shadow-2xl w-full h-[500px] object-cover"
+                  />
+                ) : (
+                  <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-2xl w-full h-[500px] flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <div className="text-8xl mb-4">📷</div>
+                      <p className="text-sm opacity-75">{currentPage.content.imageName || 'Image'}</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </motion.div>
               
               <motion.div
@@ -190,12 +293,63 @@ export default function WebsitePage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 }}
-                className="bg-black/30 backdrop-blur-sm rounded-2xl p-12 aspect-video flex items-center justify-center"
               >
-                <div className="text-center">
-                  <div className="text-6xl mb-4">🎬</div>
-                  <p className="text-white/60">{currentPage.content.videoName || 'Video'}</p>
-                </div>
+                {currentPage.content.video ? (
+                  <video
+                    src={currentPage.content.video}
+                    controls
+                    className="w-full rounded-2xl shadow-2xl"
+                  />
+                ) : (
+                  <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-12 aspect-video flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-6xl mb-4">🎬</div>
+                      <p className="text-white/60">{currentPage.content.videoName || 'Video'}</p>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </div>
+          )}
+
+          {/* Text with Audio Template */}
+          {currentPage.templateId === 'text-with-audio' && (
+            <div className="max-w-4xl text-center">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3, type: "spring" }}
+              >
+                <div className="text-8xl mb-8">🎵</div>
+              </motion.div>
+              
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="text-xl md:text-2xl mb-8 text-white/90 whitespace-pre-wrap"
+              >
+                {currentPage.content.text}
+              </motion.p>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border-2 border-white/20"
+              >
+                {currentPage.content.audio ? (
+                  <audio
+                    src={currentPage.content.audio}
+                    controls
+                    className="w-full"
+                  />
+                ) : (
+                  <div className="text-center">
+                    <div className="text-4xl mb-2">🎧</div>
+                    <p className="text-white/60">{currentPage.content.audioName || 'Audio'}</p>
+                  </div>
+                )}
               </motion.div>
             </div>
           )}
@@ -218,18 +372,205 @@ export default function WebsitePage() {
                 transition={{ delay: 0.5 }}
                 className="grid grid-cols-2 md:grid-cols-3 gap-4"
               >
-                {Array.from({ length: currentPage.content.galleryCount || 5 }).map((_, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.6 + idx * 0.1 }}
-                    className="rounded-xl shadow-xl w-full h-48 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
-                  >
-                    <div className="text-white text-4xl">📷</div>
-                  </motion.div>
-                ))}
+                {currentPage.content.gallery && currentPage.content.gallery.length > 0 ? (
+                  currentPage.content.gallery.map((img, idx) => (
+                    <motion.img
+                      key={idx}
+                      src={img}
+                      alt={`Gallery ${idx + 1}`}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.6 + idx * 0.1 }}
+                      className="rounded-xl shadow-xl w-full h-48 object-cover"
+                    />
+                  ))
+                ) : (
+                  Array.from({ length: currentPage.content.galleryCount || 5 }).map((_, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.6 + idx * 0.1 }}
+                      className="rounded-xl shadow-xl w-full h-48 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
+                    >
+                      <div className="text-white text-4xl">📷</div>
+                    </motion.div>
+                  ))
+                )}
               </motion.div>
+            </div>
+          )}
+
+          {/* Treasure Hunt Templates (all variations) */}
+          {currentPage.templateId?.startsWith('treasure-hunt') && (
+            <div className="max-w-4xl w-full">
+              {!isUnlocked ? (
+                /* Locked State - Show Clues */
+                <div className="text-center">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", delay: 0.2 }}
+                  >
+                    <FaLock className="text-8xl mx-auto mb-8 text-yellow-300" />
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="mb-6"
+                  >
+                    <h2 className="text-4xl font-bold mb-2">Solve the Clues to Unlock! 🔐</h2>
+                    <p className="text-xl text-yellow-200">You have only 3 clues to unlock</p>
+                  </motion.div>
+
+                  {/* Show current clue with cycling animation */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentClueIndex}
+                      initial={{ opacity: 0, x: 100 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -100 }}
+                      transition={{ duration: 0.5 }}
+                      className="mb-8"
+                    >
+                      <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl border-2 border-yellow-300/50 shadow-2xl">
+                        <div className="flex items-start gap-4">
+                          <span className="text-3xl font-bold text-yellow-300">#{currentClueIndex + 1}</span>
+                          <p className="text-2xl text-left flex-1">
+                            {currentClueIndex === 0 && currentPage.content.clue1}
+                            {currentClueIndex === 1 && currentPage.content.clue2}
+                            {currentClueIndex === 2 && currentPage.content.clue3}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* Clue indicators */}
+                  <div className="flex justify-center gap-2 mb-8">
+                    {[0, 1, 2].map((idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentClueIndex(idx)}
+                        className={`h-3 w-3 rounded-full transition-all ${
+                          idx === currentClueIndex ? 'bg-yellow-300 w-8' : 'bg-white/30'
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1 }}
+                    className="max-w-md mx-auto"
+                  >
+                    <input
+                      type="text"
+                      value={passwordInput}
+                      onChange={(e) => setPasswordInput(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+                      placeholder="Enter the password..."
+                      className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 focus:outline-none focus:border-yellow-300 text-center text-lg mb-4"
+                    />
+                    
+                    <button
+                      onClick={handlePasswordSubmit}
+                      className="w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-lg"
+                    >
+                      <FaUnlock /> Unlock
+                    </button>
+
+                    <AnimatePresence>
+                      {showPasswordError && (
+                        <motion.p
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="text-red-300 mt-4 font-semibold"
+                        >
+                          ❌ Incorrect password. Try again!
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                </div>
+              ) : (
+                /* Unlocked State - Show Content */
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-center"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border-2 border-white/20 mb-6"
+                  >
+                    <p className="text-xl md:text-2xl leading-relaxed whitespace-pre-wrap">
+                      {currentPage.content.text}
+                    </p>
+                  </motion.div>
+
+                  {/* Audio for treasure-hunt */}
+                  {currentPage.templateId === 'treasure-hunt' && (currentPage.content.audio || currentPage.content.audioName) && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20"
+                    >
+                      <div className="text-center">
+                        <div className="text-5xl mb-4">🎵</div>
+                        <p className="text-lg mb-4">Hidden Audio Message</p>
+                        {currentPage.content.audio ? (
+                          <audio
+                            src={currentPage.content.audio}
+                            controls
+                            className="w-full"
+                          />
+                        ) : (
+                          <p className="text-sm text-white/60">{currentPage.content.audioName}</p>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Image for treasure-hunt-image */}
+                  {currentPage.templateId === 'treasure-hunt-image' && currentPage.content.image && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <img
+                        src={currentPage.content.image}
+                        alt="Hidden Surprise"
+                        className="rounded-2xl shadow-2xl w-full max-w-2xl mx-auto"
+                      />
+                    </motion.div>
+                  )}
+
+                  {/* Video for treasure-hunt-video */}
+                  {currentPage.templateId === 'treasure-hunt-video' && currentPage.content.video && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <video
+                        src={currentPage.content.video}
+                        controls
+                        className="rounded-2xl shadow-2xl w-full max-w-3xl mx-auto"
+                      />
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
             </div>
           )}
         </motion.div>

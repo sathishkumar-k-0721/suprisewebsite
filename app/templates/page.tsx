@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { FaFileAlt, FaImage, FaVideo, FaImages, FaPlus, FaMinus, FaShoppingCart, FaArrowRight, FaEye, FaTimes, FaUser, FaSignOutAlt, FaBars } from 'react-icons/fa'
+import { FaFileAlt, FaImage, FaVideo, FaImages, FaPlus, FaMinus, FaShoppingCart, FaArrowRight, FaEye, FaTimes, FaUser, FaSignOutAlt, FaBars, FaLock, FaMusic } from 'react-icons/fa'
 import TemplatePreview from '@/components/TemplatePreview'
 
 interface Template {
@@ -45,7 +45,7 @@ const templates: Template[] = [
       'Single image upload',
       'Custom text overlay',
       'Image filters',
-      'Optional background music (+₹20)'
+      'Smooth animations'
     ],
     color: 'from-pink-500 to-pink-600',
     preview: '🖼️'
@@ -66,6 +66,21 @@ const templates: Template[] = [
     preview: '🎥'
   },
   {
+    id: 'text-with-audio',
+    name: 'Text with Audio',
+    description: 'Combine your message with a special audio or voice note',
+    icon: FaMusic,
+    price: 80,
+    features: [
+      'Audio file upload',
+      'Custom text message',
+      'Audio player controls',
+      'Background effects'
+    ],
+    color: 'from-teal-500 to-teal-600',
+    preview: '🎵'
+  },
+  {
     id: 'photo-gallery',
     name: 'Photo Gallery',
     description: 'Create a beautiful slideshow with multiple photos',
@@ -75,10 +90,55 @@ const templates: Template[] = [
       'Up to 5 photos',
       'Slideshow animation',
       'Custom captions',
-      'Background music (+₹20)'
+      'Auto-play slideshow'
     ],
     color: 'from-orange-500 to-orange-600',
     preview: '📸'
+  },
+  {
+    id: 'treasure-hunt',
+    name: 'Treasure Hunt+Audio',
+    description: 'Interactive treasure hunt with clues, password unlock, and hidden audio',
+    icon: FaLock,
+    price: 120,
+    features: [
+      '3 text clues',
+      'Password unlock system',
+      'Hidden audio message',
+      'Page navigation controls'
+    ],
+    color: 'from-indigo-500 to-indigo-600',
+    preview: '🔐'
+  },
+  {
+    id: 'treasure-hunt-image',
+    name: 'Treasure Hunt+Image',
+    description: 'Clue-based hunt that reveals a special photo and message',
+    icon: FaLock,
+    price: 130,
+    features: [
+      '3 text clues',
+      'Password unlock system',
+      'Hidden image reveal',
+      'Hidden text message'
+    ],
+    color: 'from-violet-500 to-violet-600',
+    preview: '🔐🖼️'
+  },
+  {
+    id: 'treasure-hunt-video',
+    name: 'Treasure Hunt+Video',
+    description: 'Clue-based hunt that unlocks a surprise video message',
+    icon: FaLock,
+    price: 150,
+    features: [
+      '3 text clues',
+      'Password unlock system',
+      'Hidden video reveal',
+      'Hidden text message'
+    ],
+    color: 'from-fuchsia-500 to-fuchsia-600',
+    preview: '🔐🎥'
   }
 ]
 
@@ -359,7 +419,7 @@ export default function TemplatesPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
+                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 flex flex-col"
               >
                 {/* Template Preview */}
                 <div className={`h-32 bg-gradient-to-br ${template.color} flex items-center justify-center text-6xl`}>
@@ -367,16 +427,16 @@ export default function TemplatesPage() {
                 </div>
 
                 {/* Template Info */}
-                <div className="p-6">
+                <div className="p-6 flex flex-col flex-1">
                   <div className="flex items-center gap-3 mb-3">
                     <Icon className={`text-2xl bg-gradient-to-br ${template.color} bg-clip-text text-transparent`} />
                     <h3 className="text-xl font-bold text-gray-900">{template.name}</h3>
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-4">{template.description}</p>
+                  <p className="text-sm text-gray-600 mb-4 h-10">{template.description}</p>
 
                   {/* Features */}
-                  <ul className="space-y-2 mb-4">
+                  <ul className="space-y-2 mb-6">
                     {template.features.map((feature, i) => (
                       <li key={i} className="text-xs text-gray-500 flex items-start gap-2">
                         <span className="text-green-500 mt-0.5">✓</span>
@@ -385,54 +445,58 @@ export default function TemplatesPage() {
                     ))}
                   </ul>
 
-                  {/* Price */}
-                  <div className={`text-2xl font-bold bg-gradient-to-r ${template.color} bg-clip-text text-transparent mb-4`}>
-                    ₹{template.price}
-                  </div>
-
-                  {/* Add/Remove Controls */}
-                  {count === 0 ? (
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => setPreviewTemplate(template.id)}
-                        className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-all"
-                      >
-                        <FaEye /> View Sample
-                      </button>
-                      <button
-                        onClick={() => addTemplate(template.id)}
-                        className={`w-full py-3 bg-gradient-to-r ${template.color} text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all`}
-                      >
-                        <FaPlus /> Add Template
-                      </button>
+                  {/* Price & Buttons - Aligned at bottom */}
+                  <div className="mt-auto space-y-4">
+                    {/* Price */}
+                    <div className={`text-2xl font-bold bg-gradient-to-r ${template.color} bg-clip-text text-transparent`}>
+                      ₹{template.price}
                     </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => setPreviewTemplate(template.id)}
-                        className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-all text-sm"
-                      >
-                        <FaEye /> View Sample
-                      </button>
-                      <div className="flex items-center gap-2">
+
+                    {/* Add/Remove Controls */}
+                    {/* Add/Remove Controls */}
+                    {count === 0 ? (
+                      <div className="space-y-2">
                         <button
-                          onClick={() => removeTemplate(template.id)}
-                          className="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-300 transition-all"
+                          onClick={() => setPreviewTemplate(template.id)}
+                          className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-all"
                         >
-                          <FaMinus />
+                          <FaEye /> View Sample
                         </button>
-                        <div className="px-6 py-3 bg-gray-100 rounded-lg font-bold text-lg">
-                          {count}
-                        </div>
                         <button
                           onClick={() => addTemplate(template.id)}
-                          className={`flex-1 py-3 bg-gradient-to-r ${template.color} text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all`}
+                          className={`w-full py-3 bg-gradient-to-r ${template.color} text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all`}
                         >
-                          <FaPlus />
+                          <FaPlus /> Add Template
                         </button>
                       </div>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => setPreviewTemplate(template.id)}
+                          className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-all"
+                        >
+                          <FaEye /> View Sample
+                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => removeTemplate(template.id)}
+                            className="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-300 transition-all"
+                          >
+                            <FaMinus />
+                          </button>
+                          <div className="px-6 py-3 bg-gray-100 rounded-lg font-bold text-lg">
+                            {count}
+                          </div>
+                          <button
+                            onClick={() => addTemplate(template.id)}
+                            className={`flex-1 py-3 bg-gradient-to-r ${template.color} text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all`}
+                          >
+                            <FaPlus />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )
