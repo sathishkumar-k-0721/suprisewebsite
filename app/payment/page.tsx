@@ -13,17 +13,40 @@ export default function PaymentPage() {
   const [selection, setSelection] = useState<any>(null)
 
   useEffect(() => {
-    // Get selection from sessionStorage
-    const savedSelection = sessionStorage.getItem('pricingSelection')
-    const savedAmount = sessionStorage.getItem('totalAmount')
+    // Get selection from localStorage (from templates page)
+    const selectedTemplates = localStorage.getItem('selectedTemplates')
     
-    if (!savedSelection || !savedAmount) {
-      router.push('/pricing')
-      return
-    }
+    if (!selectedTemplates) {
+      // Fallback to old pricing flow
+      const savedSelection = sessionStorage.getItem('pricingSelection')
+      const savedAmount = sessionStorage.getItem('totalAmount')
+      
+      if (!savedSelection || !savedAmount) {
+        router.push('/templates')
+        return
+      }
 
-    setSelection(JSON.parse(savedSelection))
-    setAmount(parseInt(savedAmount))
+      setSelection(JSON.parse(savedSelection))
+      setAmount(parseInt(savedAmount))
+    } else {
+      // New templates flow
+      const templates = JSON.parse(selectedTemplates)
+      
+      // Calculate total amount
+      const templatePrices: { [key: string]: number } = {
+        'text-only': 50,
+        'text-with-image': 70,
+        'text-with-video': 100,
+        'photo-gallery': 50
+      }
+      
+      const totalAmount = Object.entries(templates).reduce((total, [templateId, count]) => {
+        return total + (templatePrices[templateId] || 0) * (count as number)
+      }, 0)
+      
+      setSelection(templates)
+      setAmount(totalAmount)
+    }
   }, [router])
 
   const handlePayment = async () => {
@@ -54,6 +77,9 @@ export default function PaymentPage() {
           // Clear pricing selection
           sessionStorage.removeItem('pricingSelection')
           sessionStorage.removeItem('totalAmount')
+          
+          // Keep selectedTemplates in localStorage for content creation
+          // (Do not remove it - page-builder needs it)
           
           // Show success message
           alert('✅ Payment Successful! Redirecting to content upload...')

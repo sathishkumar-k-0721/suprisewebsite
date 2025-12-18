@@ -19,6 +19,7 @@ model User {
   updatedAt DateTime  @updatedAt
   websites  Website[]
   payments  Payment[]
+  cart      Cart?
 }
 
 model Website {
@@ -39,28 +40,14 @@ model Page {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   websiteId   String   @db.ObjectId
   website     Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
-  pageNumber  Int      // 1, 2, 3, 4
-  enabled     Boolean  @default(true)
-  
-  // Page 1: Text Message
-  textContent String?
-  
-  // Page 2: Video
-  videoUrl    String?
-  
-  // Page 3: Image + Text + Audio
-  imageUrl    String?
-  audioUrl    String?
-  
-  // Page 4: Image Gallery
-  imageUrls   String[]
-  hasAudio    Boolean  @default(false)
-  hasVideo    Boolean  @default(false)
+  templateId  String   // "text-only", "text-with-image", "text-with-video", "photo-gallery"
+  order       Int      // Page order: 0, 1, 2, 3...
+  content     Json     // User's content: { text, imageName, videoName, galleryCount }
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@unique([websiteId, pageNumber])
+  @@unique([websiteId, order])
 }
 
 model Payment {
@@ -88,4 +75,25 @@ model Payment {
   
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+model Cart {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     Json     // Store items as JSON: { "text-only": { quantity: 2, price: 50, name: "Text Only" } }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Template {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  templateId  String   @unique // text-only, text-with-image, text-with-video, photo-gallery
+  name        String
+  description String
+  price       Float
+  features    String[]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -2,31 +2,53 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import PageBuilder, { PageContent } from './page-builder'
 
 export default function CreatePage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/login')
-    }
-  }, [status, router])
+  // Removed authentication requirement for now
+  // Users can proceed directly to add content without logging in
 
   const handleComplete = async (pages: PageContent[]) => {
     setLoading(true)
 
     try {
-      // TODO: Upload to Cloudinary and save to database
-      console.log('Pages to upload:', pages)
+      // Prepare content for each page (for now, without Cloudinary uploads)
+      const pagesData = pages.map(page => ({
+        templateId: page.templateId,
+        content: {
+          text: page.text || '',
+          // TODO: Upload files to Cloudinary and get URLs
+          // For now, storing file names as placeholders
+          imageName: page.image?.name || null,
+          videoName: page.video?.name || null,
+          galleryCount: page.galleryImages?.length || 0
+        }
+      }))
+
+      // Save to database
+      const response = await fetch('/api/website/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'My Surprise Website',
+          pages: pagesData
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create website')
+      }
+
+      const data = await response.json()
       
-      alert('✅ Content uploaded successfully! (Demo mode - Cloudinary integration pending)')
+      // Clear localStorage
+      localStorage.removeItem('selectedTemplates')
       
-      // Redirect to dashboard
-      router.push('/dashboard')
+      // Redirect to success page with website ID
+      router.push(`/success?id=${data.websiteId}&url=${data.uniqueUrl}`)
     } catch (error: any) {
       console.error('Upload Error:', error)
       alert(error.message || 'Failed to upload content. Please try again.')
@@ -37,14 +59,6 @@ export default function CreatePage() {
 
   const handleCancel = () => {
     router.push('/')
-  }
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-600"></div>
-      </div>
-    )
   }
 
   if (loading) {
