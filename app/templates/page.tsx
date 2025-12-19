@@ -1123,7 +1123,6 @@ export default function TemplatesPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setPreviewTemplate(null)}
               className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4"
             >
             <motion.div
@@ -1132,20 +1131,13 @@ export default function TemplatesPage() {
               exit={{ scale: 0.9, opacity: 0 }}
               className="relative w-full max-w-7xl h-[95vh] max-h-[95vh] bg-gradient-to-br from-white via-gray-50 to-purple-50 rounded-3xl shadow-2xl overflow-hidden border-4 border-white/50 flex flex-col mx-2 sm:mx-4"
             >
-                {/* Close Button */}
-                <button
-                  onClick={() => setPreviewTemplate(null)}
-                  className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
-                >
-                  <FaTimes className="text-lg sm:text-xl text-gray-700" />
-                </button>
 
                 {/* Header */}
-                <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white p-3 sm:p-4 flex flex-col gap-3 relative overflow-hidden">
+                <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between relative overflow-hidden gap-3 sm:gap-0">
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 via-pink-500/90 to-orange-500/90" />
                   <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%224%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20" />
-                  <div className="relative z-10">
-                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3">
+                  <div className="relative z-10 flex flex-col text-center sm:text-left">
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 flex items-center justify-center sm:justify-start gap-2 sm:gap-3">
                       <span className="text-2xl sm:text-3xl lg:text-4xl">
                         {previewTheme === 'love' ? '💕' : previewTheme === 'birthday' ? '🎂' : '🎨'}
                       </span>
@@ -1157,51 +1149,70 @@ export default function TemplatesPage() {
                       This is how your page will look with your content ✨
                     </p>
                   </div>
-                  {/* Theme Switcher for Preview */}
-                  <div className="flex flex-wrap gap-2 sm:gap-3 items-center justify-center sm:justify-start">
-                    <span className="font-semibold text-white text-sm sm:text-base">Theme:</span>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`relative px-3 sm:px-4 py-2 rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
-                        previewTheme === 'normal'
-                          ? 'border-white bg-white/20 text-white shadow-lg'
-                          : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
-                      }`}
-                      onClick={() => setPreviewTheme('normal')}
+                  {/* Theme Switcher and Close Button */}
+                  <div className="relative z-10 flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="flex flex-wrap gap-1 sm:gap-2 lg:gap-3 items-center justify-center">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`relative px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
+                          previewTheme === 'normal'
+                            ? 'border-white bg-white/20 text-white shadow-lg'
+                            : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewTheme('normal');
+                        }}
+                      >
+                        <span className="relative z-10 flex items-center gap-1">
+                          <span>🎨</span>
+                          <span> Normal</span>
+                        </span>
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`relative px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
+                          previewTheme === 'love'
+                            ? 'border-white bg-white/20 text-white shadow-lg'
+                            : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewTheme('love');
+                        }}
+                      >
+                        <span className="relative z-10 flex items-center gap-1">
+                          <span>💕</span>
+                          <span> Love</span>
+                        </span>
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`relative px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
+                          previewTheme === 'birthday'
+                            ? 'border-white bg-white/20 text-white shadow-lg'
+                            : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewTheme('birthday');
+                        }}
+                      >
+                        <span className="relative z-10 flex items-center gap-1">
+                          <span>🎂</span>
+                          <span> Birthday</span>
+                        </span>
+                      </motion.button>
+                    </div>
+                    <button
+                      onClick={() => setPreviewTemplate(null)}
+                      className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all flex-shrink-0"
                     >
-                      <span className="relative z-10 flex items-center gap-1">
-                        🎨 Normal
-                      </span>
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`relative px-3 sm:px-4 py-2 rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
-                        previewTheme === 'love'
-                          ? 'border-white bg-white/20 text-white shadow-lg'
-                          : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
-                      }`}
-                      onClick={() => setPreviewTheme('love')}
-                    >
-                      <span className="relative z-10 flex items-center gap-1">
-                        💕 Love
-                      </span>
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`relative px-3 sm:px-4 py-2 rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
-                        previewTheme === 'birthday'
-                          ? 'border-white bg-white/20 text-white shadow-lg'
-                          : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
-                      }`}
-                      onClick={() => setPreviewTheme('birthday')}
-                    >
-                      <span className="relative z-10 flex items-center gap-1">
-                        🎂 Birthday
-                      </span>
-                    </motion.button>
+                      <FaTimes className="text-sm sm:text-lg lg:text-xl text-gray-700" />
+                    </button>
                   </div>
                 </div>
 
