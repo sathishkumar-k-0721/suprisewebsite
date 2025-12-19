@@ -487,15 +487,15 @@ export default function TemplatesPage() {
           <motion.h2
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold mb-4 text-gray-800 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+            className="text-xl sm:text-2xl font-bold mb-4 text-gray-800 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center"
           >
             Choose a Theme for Your Website ✨
           </motion.h2>
-          <div className="flex gap-8 flex-wrap justify-center">
+          <div className="flex gap-4 sm:gap-6 lg:gap-8 flex-wrap justify-center">
             <motion.button
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
-              className={`relative px-8 py-6 rounded-3xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden ${
+              className={`relative px-6 sm:px-8 py-4 sm:py-6 rounded-3xl border-3 font-bold text-base sm:text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-1 sm:gap-2 overflow-hidden ${
                 selectedTheme === 'normal'
                   ? 'border-purple-600 bg-gradient-to-br from-purple-500 to-purple-700 text-white shadow-purple-500/50'
                   : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-purple-400 hover:shadow-purple-200/50'
@@ -508,14 +508,14 @@ export default function TemplatesPage() {
                   : 'bg-gradient-to-br from-purple-100 to-purple-200'
               }`} />
               <motion.span
-                className="text-4xl relative z-10"
+                className="text-3xl sm:text-4xl relative z-10"
                 animate={selectedTheme === 'normal' ? { rotate: [0, 10, -10, 0] } : {}}
                 transition={{ duration: 0.5, repeat: selectedTheme === 'normal' ? Infinity : 0, repeatDelay: 2 }}
               >
                 🎨
               </motion.span>
-              <span className="relative z-10 font-bold">Normal Theme</span>
-              <span className={`text-sm relative z-10 px-2 py-1 rounded-full ${
+              <span className="relative z-10 font-bold text-sm sm:text-base">Normal Theme</span>
+              <span className={`text-xs sm:text-sm relative z-10 px-2 py-1 rounded-full ${
                 selectedTheme === 'normal'
                   ? 'bg-white/20 text-white'
                   : 'bg-green-100 text-green-700'
@@ -527,7 +527,7 @@ export default function TemplatesPage() {
             <motion.button
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
-              className={`relative px-8 py-6 rounded-3xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden ${
+              className={`relative px-6 sm:px-8 py-4 sm:py-6 rounded-3xl border-3 font-bold text-base sm:text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-1 sm:gap-2 overflow-hidden ${
                 selectedTheme === 'love'
                   ? 'border-pink-600 bg-gradient-to-br from-pink-500 to-rose-600 text-white shadow-pink-500/50'
                   : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-pink-400 hover:shadow-pink-200/50'
@@ -540,7 +540,7 @@ export default function TemplatesPage() {
                   : 'bg-gradient-to-br from-pink-100 to-rose-100'
               }`} />
               <motion.span
-                className="text-4xl relative z-10"
+                className="text-3xl sm:text-4xl relative z-10"
                 animate={selectedTheme === 'love' ? {
                   scale: [1, 1.2, 1],
                   rotate: [0, 10, -10, 0]
@@ -549,8 +549,8 @@ export default function TemplatesPage() {
               >
                 💕
               </motion.span>
-              <span className="relative z-10 font-bold">Love Theme</span>
-              <span className={`text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
+              <span className="relative z-10 font-bold text-sm sm:text-base">Love Theme</span>
+              <span className={`text-xs sm:text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
                 selectedTheme === 'love'
                   ? 'bg-white/20 text-white'
                   : 'bg-pink-100 text-pink-700'
@@ -562,7 +562,7 @@ export default function TemplatesPage() {
             <motion.button
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
-              className={`relative px-8 py-6 rounded-3xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden ${
+              className={`relative px-6 sm:px-8 py-4 sm:py-6 rounded-3xl border-3 font-bold text-base sm:text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-1 sm:gap-2 overflow-hidden ${
                 selectedTheme === 'birthday'
                   ? 'border-yellow-500 bg-gradient-to-br from-yellow-400 to-orange-500 text-white shadow-yellow-500/50'
                   : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-yellow-400 hover:shadow-yellow-200/50'
@@ -575,7 +575,7 @@ export default function TemplatesPage() {
                   : 'bg-gradient-to-br from-yellow-100 to-orange-100'
               }`} />
               <motion.span
-                className="text-4xl relative z-10"
+                className="text-3xl sm:text-4xl relative z-10"
                 animate={selectedTheme === 'birthday' ? {
                   scale: [1, 1.1, 1],
                   rotate: [0, -5, 5, 0]
@@ -584,8 +584,8 @@ export default function TemplatesPage() {
               >
                 🎂
               </motion.span>
-              <span className="relative z-10 font-bold">Birthday Theme</span>
-              <span className={`text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
+              <span className="relative z-10 font-bold text-sm sm:text-base">Birthday Theme</span>
+              <span className={`text-xs sm:text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
                 selectedTheme === 'birthday'
                   ? 'bg-white/20 text-white'
                   : 'bg-yellow-100 text-yellow-700'
@@ -601,17 +601,17 @@ export default function TemplatesPage() {
           <motion.h2
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold mb-6 text-gray-800 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+            className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center"
           >
             Choose Duration & Schedule 📅
           </motion.h2>
 
           {/* Duration Options */}
-          <div className="flex flex-wrap gap-6 justify-center mb-6">
+          <div className="flex flex-wrap gap-4 sm:gap-6 justify-center mb-6">
             <motion.button
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
-              className={`relative px-6 py-4 rounded-2xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden min-w-[140px] ${
+              className={`relative px-4 sm:px-6 py-3 sm:py-4 rounded-2xl border-3 font-bold text-sm sm:text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-1 sm:gap-2 overflow-hidden min-w-[120px] sm:min-w-[140px] ${
                 selectedDuration === 'trial'
                   ? 'border-green-500 bg-gradient-to-br from-green-400 to-green-600 text-white shadow-green-500/50'
                   : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-green-400 hover:shadow-green-200/50'
@@ -624,14 +624,14 @@ export default function TemplatesPage() {
                   : 'bg-gradient-to-br from-green-100 to-green-200'
               }`} />
               <motion.span
-                className="text-3xl relative z-10"
+                className="text-2xl sm:text-3xl relative z-10"
                 animate={selectedDuration === 'trial' ? { rotate: [0, 5, -5, 0] } : {}}
                 transition={{ duration: 0.5, repeat: selectedDuration === 'trial' ? Infinity : 0, repeatDelay: 2 }}
               >
                 🆓
               </motion.span>
-              <span className="relative z-10 font-bold text-center">30 Days Free</span>
-              <span className={`text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
+              <span className="relative z-10 font-bold text-center text-xs sm:text-sm">30 Days Free</span>
+              <span className={`text-xs sm:text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
                 selectedDuration === 'trial'
                   ? 'bg-white/20 text-white'
                   : 'bg-green-100 text-green-700'
@@ -643,7 +643,7 @@ export default function TemplatesPage() {
             <motion.button
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
-              className={`relative px-6 py-4 rounded-2xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden min-w-[140px] ${
+              className={`relative px-4 sm:px-6 py-3 sm:py-4 rounded-2xl border-3 font-bold text-sm sm:text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-1 sm:gap-2 overflow-hidden min-w-[120px] sm:min-w-[140px] ${
                 selectedDuration === 'extended'
                   ? 'border-blue-500 bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-blue-500/50'
                   : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-blue-400 hover:shadow-blue-200/50'
@@ -656,7 +656,7 @@ export default function TemplatesPage() {
                   : 'bg-gradient-to-br from-blue-100 to-blue-200'
               }`} />
               <motion.span
-                className="text-3xl relative z-10"
+                className="text-2xl sm:text-3xl relative z-10"
                 animate={selectedDuration === 'extended' ? {
                   scale: [1, 1.1, 1],
                   rotate: [0, 5, -5, 0]
@@ -665,8 +665,8 @@ export default function TemplatesPage() {
               >
                 ⏰
               </motion.span>
-              <span className="relative z-10 font-bold text-center">+30 Days</span>
-              <span className={`text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
+              <span className="relative z-10 font-bold text-center text-xs sm:text-sm">+30 Days</span>
+              <span className={`text-xs sm:text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
                 selectedDuration === 'extended'
                   ? 'bg-white/20 text-white'
                   : 'bg-blue-100 text-blue-700'
@@ -678,7 +678,7 @@ export default function TemplatesPage() {
             <motion.button
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
-              className={`relative px-6 py-4 rounded-2xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden min-w-[140px] ${
+              className={`relative px-4 sm:px-6 py-3 sm:py-4 rounded-2xl border-3 font-bold text-sm sm:text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-1 sm:gap-2 overflow-hidden min-w-[120px] sm:min-w-[140px] ${
                 selectedDuration === 'lifetime'
                   ? 'border-purple-500 bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-purple-500/50'
                   : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-purple-400 hover:shadow-purple-200/50'
@@ -691,7 +691,7 @@ export default function TemplatesPage() {
                   : 'bg-gradient-to-br from-purple-100 to-purple-200'
               }`} />
               <motion.span
-                className="text-3xl relative z-10"
+                className="text-2xl sm:text-3xl relative z-10"
                 animate={selectedDuration === 'lifetime' ? {
                   scale: [1, 1.1, 1],
                   rotate: [0, -3, 3, 0]
@@ -700,8 +700,8 @@ export default function TemplatesPage() {
               >
                 ♾️
               </motion.span>
-              <span className="relative z-10 font-bold text-center">Lifetime</span>
-              <span className={`text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
+              <span className="relative z-10 font-bold text-center text-xs sm:text-sm">Lifetime</span>
+              <span className={`text-xs sm:text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
                 selectedDuration === 'lifetime'
                   ? 'bg-white/20 text-white'
                   : 'bg-purple-100 text-purple-700'
