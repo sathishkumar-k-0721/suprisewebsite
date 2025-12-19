@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { FaFileAlt, FaImage, FaVideo, FaImages, FaPlus, FaMinus, FaShoppingCart, FaArrowRight, FaEye, FaTimes, FaUser, FaSignOutAlt, FaBars, FaLock, FaMusic } from 'react-icons/fa'
+import { FaFileAlt, FaImage, FaVideo, FaImages, FaPlus, FaMinus, FaShoppingCart, FaArrowRight, FaEye, FaTimes, FaUser, FaSignOutAlt, FaBars, FaLock, FaMusic, FaCalendarAlt } from 'react-icons/fa'
 import TemplatePreview from '@/components/TemplatePreview'
 import { IconType } from 'react-icons'
 
@@ -166,6 +166,7 @@ export default function TemplatesPage() {
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30)
     return thirtyDaysFromNow.toISOString().split('T')[0] // YYYY-MM-DD format
   })
+  const [showDateScheduler, setShowDateScheduler] = useState(false)
   // Helper function to open preview modal
   const openPreview = (templateId: string) => {
     setPreviewTemplate(templateId)
@@ -601,7 +602,7 @@ export default function TemplatesPage() {
           <motion.h2
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center"
+            className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
           >
             Choose Duration & Schedule 📅
           </motion.h2>
@@ -716,68 +717,101 @@ export default function TemplatesPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl shadow-lg p-6 max-w-md w-full"
+              className="bg-white rounded-2xl shadow-lg p-4 max-w-md w-full"
             >
-              <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">Schedule Your Website</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    From Date
-                  </label>
-                  <input
-                    type="date"
-                    value={customFromDate}
-                    onChange={(e) => {
-                      setCustomFromDate(e.target.value)
-                      // Auto-calculate to date based on duration
-                      if (selectedDuration === 'trial') {
-                        const fromDate = new Date(e.target.value)
-                        const toDate = new Date(fromDate)
-                        toDate.setDate(fromDate.getDate() + 30)
-                        setCustomToDate(toDate.toISOString().split('T')[0])
-                      } else if (selectedDuration === 'extended') {
-                        const fromDate = new Date(e.target.value)
-                        const toDate = new Date(fromDate)
-                        toDate.setDate(fromDate.getDate() + 60) // 30 + 30 days
-                        setCustomToDate(toDate.toISOString().split('T')[0])
-                      }
-                    }}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white"
-                  />
+              {/* Compact Summary */}
+              <div className="text-center">
+                <div className="text-sm text-gray-600 mb-2">
+                  📅 <span className="font-medium">Active:</span> {new Date(customFromDate).toLocaleDateString()} - {new Date(customToDate).toLocaleDateString()}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    To Date
-                  </label>
-                  <input
-                    type="date"
-                    value={customToDate}
-                    onChange={(e) => {
-                      setCustomToDate(e.target.value)
-                      // Auto-switch to extended duration if more than 30 days
-                      if (customFromDate && e.target.value) {
-                        const fromDate = new Date(customFromDate)
-                        const toDate = new Date(e.target.value)
-                        const daysDiff = Math.ceil((toDate.getTime() - fromDate.getTime()) / (1000 * 3600 * 24))
-                        if (daysDiff > 30 && selectedDuration === 'trial') {
-                          setSelectedDuration('extended')
-                        }
-                      }
-                    }}
-                    min={customFromDate}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white"
-                  />
+                <div className="text-sm text-gray-600 mb-3">
+                  💰 <span className="font-medium">Cost:</span> <span className="text-green-600 font-bold">₹{getDurationPrice()}</span>
+                  {getDurationPrice() === 0 && <span className="text-green-600"> (Free!)</span>}
                 </div>
-                <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-                  <p className="font-medium mb-1">📅 Your website will be active:</p>
-                  <p>From: <span className="font-semibold text-purple-600">{new Date(customFromDate).toLocaleDateString()}</span></p>
-                  <p>To: <span className="font-semibold text-purple-600">{new Date(customToDate).toLocaleDateString()}</span></p>
-                  <p className="mt-2 font-medium">💰 Duration Cost: <span className="font-bold text-green-600">₹{getDurationPrice()}</span></p>
-                  {getDurationPrice() === 0 && <p className="text-xs text-green-600 mt-1">First 30 days are free!</p>}
-                  {getDurationPrice() > 0 && <p className="text-xs text-blue-600 mt-1">₹30 for each additional 30 days</p>}
-                </div>
+                <button
+                  onClick={() => setShowDateScheduler(!showDateScheduler)}
+                  className="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center gap-2 mx-auto transition-colors"
+                >
+                  <FaCalendarAlt className="text-xs" />
+                  {showDateScheduler ? 'Hide' : 'Customize'} Dates
+                  <motion.span
+                    animate={{ rotate: showDateScheduler ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    ▼
+                  </motion.span>
+                </button>
               </div>
+
+              {/* Expandable Date Scheduler */}
+              <AnimatePresence>
+                {showDateScheduler && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="border-t pt-4 mt-4 space-y-4">
+                      <h4 className="text-md font-semibold text-gray-800 text-center mb-3">Schedule Your Website</h4>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          From Date
+                        </label>
+                        <input
+                          type="date"
+                          value={customFromDate}
+                          onChange={(e) => {
+                            setCustomFromDate(e.target.value)
+                            // Auto-calculate to date based on duration
+                            if (selectedDuration === 'trial') {
+                              const fromDate = new Date(e.target.value)
+                              const toDate = new Date(fromDate)
+                              toDate.setDate(fromDate.getDate() + 30)
+                              setCustomToDate(toDate.toISOString().split('T')[0])
+                            } else if (selectedDuration === 'extended') {
+                              const fromDate = new Date(e.target.value)
+                              const toDate = new Date(fromDate)
+                              toDate.setDate(fromDate.getDate() + 60) // 30 + 30 days
+                              setCustomToDate(toDate.toISOString().split('T')[0])
+                            }
+                          }}
+                          min={new Date().toISOString().split('T')[0]}
+                          className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          To Date
+                        </label>
+                        <input
+                          type="date"
+                          value={customToDate}
+                          onChange={(e) => {
+                            setCustomToDate(e.target.value)
+                            // Auto-switch to extended duration if more than 30 days
+                            if (customFromDate && e.target.value) {
+                              const fromDate = new Date(customFromDate)
+                              const toDate = new Date(e.target.value)
+                              const daysDiff = Math.ceil((toDate.getTime() - fromDate.getTime()) / (1000 * 3600 * 24))
+                              if (daysDiff > 30 && selectedDuration === 'trial') {
+                                setSelectedDuration('extended')
+                              }
+                            }
+                          }}
+                          min={customFromDate}
+                          className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white"
+                        />
+                      </div>
+                      <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
+                        {getDurationPrice() === 0 && <p className="text-green-600 font-medium">First 30 days are free!</p>}
+                        {getDurationPrice() > 0 && <p className="text-blue-600 font-medium">₹30 for each additional 30 days</p>}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
         </div>
