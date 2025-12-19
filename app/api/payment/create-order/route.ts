@@ -1,15 +1,23 @@
 import { NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-})
+import { authOptions } from '@/lib/auth'
 
 export async function POST(request: Request) {
   try {
+    // Check if Razorpay credentials are available
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET === 'your_razorpay_key_secret') {
+      return NextResponse.json(
+        { error: 'Payment service not configured. Please set up Razorpay credentials.' },
+        { status: 500 }
+      )
+    }
+
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    })
+
     const session = await getServerSession(authOptions)
     
     if (!session?.user) {

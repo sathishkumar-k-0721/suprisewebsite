@@ -29,6 +29,7 @@ model Website {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   title       String?
   description String?
+  theme       String?   @default("normal")
   isPublished Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

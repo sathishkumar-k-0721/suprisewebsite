@@ -57,6 +57,7 @@ export default function CreatePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: 'My Surprise Website',
+          theme: localStorage.getItem('selectedTheme') || 'normal',
           pages: pagesData
         })
       })

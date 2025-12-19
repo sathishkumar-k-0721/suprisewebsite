@@ -6,6 +6,99 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FaHeart, FaLock, FaUnlock, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import Link from 'next/link'
 
+// Love Theme Animated Hearts Component for Website View
+function LoveThemeHearts() {
+  const hearts = Array.from({ length: 20 }, (_, i) => i);
+
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      {hearts.map((heart) => (
+        <motion.div
+          key={heart}
+          className="absolute"
+          initial={{
+            x: Math.random() * 100 + '%',
+            y: '100vh',
+            scale: Math.random() * 0.5 + 0.3,
+            opacity: 0
+          }}
+          animate={{
+            y: '-10vh',
+            opacity: [0, 1, 1, 0],
+            rotate: [0, 180, 360],
+            scale: [0.3, 1, 0.8, 0.3]
+          }}
+          transition={{
+            duration: Math.random() * 10 + 8,
+            repeat: Infinity,
+            delay: Math.random() * 5,
+            ease: "easeOut"
+          }}
+          style={{
+            left: `${Math.random() * 100}%`,
+          }}
+        >
+          <FaHeart className="text-red-400 text-opacity-70 drop-shadow-lg" size={Math.random() * 25 + 15} />
+        </motion.div>
+      ))}
+
+      {/* Floating sparkles */}
+      {Array.from({ length: 12 }, (_, i) => (
+        <motion.div
+          key={`sparkle-${i}`}
+          className="absolute text-yellow-300 drop-shadow-sm"
+          initial={{
+            x: Math.random() * 100 + '%',
+            y: '100vh',
+            opacity: 0
+          }}
+          animate={{
+            y: '-10vh',
+            opacity: [0, 1, 0],
+            scale: [0, 1.2, 0],
+            rotate: [0, 180, 360]
+          }}
+          transition={{
+            duration: Math.random() * 8 + 6,
+            repeat: Infinity,
+            delay: Math.random() * 4,
+          }}
+        >
+          ✨
+        </motion.div>
+      ))}
+
+      {/* Floating rose petals */}
+      {Array.from({ length: 8 }, (_, i) => (
+        <motion.div
+          key={`petal-${i}`}
+          className="absolute text-pink-300"
+          initial={{
+            x: Math.random() * 100 + '%',
+            y: '100vh',
+            opacity: 0,
+            rotate: 0
+          }}
+          animate={{
+            y: '-10vh',
+            opacity: [0, 0.8, 0],
+            rotate: [0, 360],
+            x: [`${Math.random() * 100}%`, `${Math.random() * 100}%`]
+          }}
+          transition={{
+            duration: Math.random() * 12 + 10,
+            repeat: Infinity,
+            delay: Math.random() * 6,
+            ease: "linear"
+          }}
+        >
+          🌸
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 interface Page {
   id: string
   templateId: string
@@ -32,6 +125,7 @@ interface Website {
   title: string
   uniqueUrl: string
   isPublished: boolean
+  theme?: 'normal' | 'love' | 'birthday'
   pages: Page[]
 }
 
@@ -131,14 +225,14 @@ export default function WebsitePage() {
 
   const currentPage = website.pages[currentPageIndex]
   const gradients: Record<string, string> = {
-    'text-only': 'from-purple-900 via-purple-700 to-pink-700',
-    'text-with-image': 'from-blue-900 via-blue-700 to-cyan-700',
-    'text-with-video': 'from-pink-900 via-pink-700 to-red-700',
-    'text-with-audio': 'from-teal-900 via-teal-700 to-cyan-700',
-    'photo-gallery': 'from-green-900 via-green-700 to-teal-700',
-    'treasure-hunt': 'from-indigo-900 via-indigo-700 to-purple-700',
-    'treasure-hunt-image': 'from-violet-900 via-violet-700 to-purple-700',
-    'treasure-hunt-video': 'from-fuchsia-900 via-fuchsia-700 to-purple-700'
+    'text-only': website.theme === 'love' ? 'from-pink-200 via-pink-400 to-red-300' : 'from-purple-900 via-purple-700 to-pink-700',
+    'text-with-image': website.theme === 'love' ? 'from-pink-200 via-pink-400 to-red-300' : 'from-blue-900 via-blue-700 to-cyan-700',
+    'text-with-video': website.theme === 'love' ? 'from-pink-200 via-pink-400 to-red-300' : 'from-pink-900 via-pink-700 to-red-700',
+    'text-with-audio': website.theme === 'love' ? 'from-pink-200 via-pink-400 to-red-300' : 'from-teal-900 via-teal-700 to-cyan-700',
+    'photo-gallery': website.theme === 'love' ? 'from-pink-200 via-pink-400 to-red-300' : 'from-green-900 via-green-700 to-teal-700',
+    'treasure-hunt': website.theme === 'love' ? 'from-pink-200 via-pink-400 to-red-300' : 'from-indigo-900 via-indigo-700 to-purple-700',
+    'treasure-hunt-image': website.theme === 'love' ? 'from-pink-200 via-pink-400 to-red-300' : 'from-violet-900 via-violet-700 to-purple-700',
+    'treasure-hunt-video': website.theme === 'love' ? 'from-pink-200 via-pink-400 to-red-300' : 'from-fuchsia-900 via-fuchsia-700 to-purple-700'
   }
 
   const handlePasswordSubmit = () => {
@@ -172,6 +266,9 @@ export default function WebsitePage() {
 
   return (
     <main className="min-h-screen bg-black text-white overflow-hidden relative">
+      {/* Love Theme Animations */}
+      {website.theme === 'love' && <LoveThemeHearts />}
+
       {/* Progress indicator */}
       <div className="absolute top-6 right-6 z-50 flex gap-2">
         {website.pages.map((_, idx) => (

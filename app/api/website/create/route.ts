@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { nanoid } from 'nanoid'
 
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { title, pages } = await req.json()
+    const { title, pages, theme } = await req.json()
 
     // Generate unique URL (8 characters, URL-safe)
     const uniqueUrl = nanoid(8)
@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
         userId: session.user.id,
         title: title || 'My Surprise Website',
         uniqueUrl,
+        theme: theme || 'normal',
         isPublished: false,
         pages: {
           create: pages.map((page: any, index: number) => ({

@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { FaEnvelope, FaLock, FaArrowLeft } from 'react-icons/fa'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { data: session, status } = useSession()
@@ -177,5 +177,17 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-700 to-pink-700 flex items-center justify-center p-4">
+        <div className="text-white text-xl">Loading...</div>
+      </main>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }

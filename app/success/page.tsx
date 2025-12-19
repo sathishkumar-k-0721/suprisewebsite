@@ -1,18 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { FaCheck, FaCopy, FaEye, FaShareAlt } from 'react-icons/fa'
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams()
   const websiteId = searchParams.get('id')
   const uniqueUrl = searchParams.get('url')
   const [copied, setCopied] = useState(false)
 
-  const websiteLink = `${window.location.origin}/w/${uniqueUrl}`
+  const websiteLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/w/${uniqueUrl}`
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(websiteLink)
@@ -142,5 +142,17 @@ export default function SuccessPage() {
         </motion.div>
       </div>
     </main>
+  )
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-red-50 flex items-center justify-center">
+        <div className="text-gray-600 text-xl">Loading...</div>
+      </main>
+    }>
+      <SuccessContent />
+    </Suspense>
   )
 }

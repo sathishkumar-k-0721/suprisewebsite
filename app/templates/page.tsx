@@ -150,6 +150,15 @@ export default function TemplatesPage() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [previewTemplate, setPreviewTemplate] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  // Theme selection state
+  const [selectedTheme, setSelectedTheme] = useState<'normal' | 'love' | 'birthday'>('normal')
+  // Preview theme state (independent from main selection)
+  const [previewTheme, setPreviewTheme] = useState<'normal' | 'love' | 'birthday'>('normal')
+  // Helper function to open preview modal
+  const openPreview = (templateId: string) => {
+    setPreviewTemplate(templateId)
+    setPreviewTheme(selectedTheme) // Initialize preview theme with current selection
+  }
 
   // Check authentication and load cart from database
   useEffect(() => {
@@ -223,11 +232,17 @@ export default function TemplatesPage() {
     saveCartToDatabase(templateId, 'remove')
   }
 
+  const getThemePrice = () => {
+    if (selectedTheme === 'love' || selectedTheme === 'birthday') return 30;
+    return 0;
+  }
+
   const getTotalPrice = () => {
-    return Object.entries(selectedTemplates).reduce((total, [templateId, count]) => {
+    const templateTotal = Object.entries(selectedTemplates).reduce((total, [templateId, count]) => {
       const template = templates.find(t => t.id === templateId)
       return total + (template?.price || 0) * count
     }, 0)
+    return templateTotal + getThemePrice();
   }
 
   const getTotalPages = () => {
@@ -235,32 +250,33 @@ export default function TemplatesPage() {
   }
 
   const handleProceedToPayment = async () => {
-    // Store selected templates for payment
+    // Store selected templates and theme for payment
     localStorage.setItem('selectedTemplates', JSON.stringify(selectedTemplates))
-    
+    localStorage.setItem('selectedTheme', selectedTheme)
     // Show payment success message
     const totalPages = getTotalPages()
     const totalPrice = getTotalPrice()
-    
-    if (confirm(`✅ Payment Successful!\n\nTotal: ₹${totalPrice}\nPages: ${totalPages}\n\nClick OK to proceed to add your content.`)) {
+    let themeLabel = 'Normal Theme (Free)';
+    if (selectedTheme === 'love') themeLabel = 'Love Theme (+₹30)';
+    if (selectedTheme === 'birthday') themeLabel = 'Birthday Theme (+₹30)';
+    if (confirm(`✅ Payment Successful!\n\nTotal: ₹${totalPrice}\nPages: ${totalPages}\nTheme: ${themeLabel}\n\nClick OK to proceed to add your content.`)) {
       // Store payment info
       const paymentInfo = {
         templates: selectedTemplates,
         amount: totalPrice,
         pages: totalPages,
+        theme: selectedTheme,
         timestamp: new Date().toISOString(),
         status: 'success',
         userEmail: session?.user?.email
       }
       sessionStorage.setItem('paymentInfo', JSON.stringify(paymentInfo))
-      
       // Clear the cart in database
       try {
         await fetch('/api/cart', { method: 'DELETE' })
       } catch (error) {
         console.error('Failed to clear cart:', error)
       }
-      
       // Navigate to content creation
       window.location.href = '/create'
     }
@@ -275,7 +291,7 @@ export default function TemplatesPage() {
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -407,6 +423,120 @@ export default function TemplatesPage() {
           </p>
         </motion.div>
 
+        {/* Theme Selection */}
+        <div className="mb-10 flex flex-col items-center">
+          <motion.h2
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold mb-4 text-gray-800 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+          >
+            Choose a Theme for Your Website ✨
+          </motion.h2>
+          <div className="flex gap-8 flex-wrap justify-center">
+            <motion.button
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className={`relative px-8 py-6 rounded-3xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden ${
+                selectedTheme === 'normal'
+                  ? 'border-purple-600 bg-gradient-to-br from-purple-500 to-purple-700 text-white shadow-purple-500/50'
+                  : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-purple-400 hover:shadow-purple-200/50'
+              }`}
+              onClick={() => setSelectedTheme('normal')}
+            >
+              <div className={`absolute inset-0 opacity-20 ${
+                selectedTheme === 'normal'
+                  ? 'bg-gradient-to-br from-purple-400 to-purple-600'
+                  : 'bg-gradient-to-br from-purple-100 to-purple-200'
+              }`} />
+              <motion.span
+                className="text-4xl relative z-10"
+                animate={selectedTheme === 'normal' ? { rotate: [0, 10, -10, 0] } : {}}
+                transition={{ duration: 0.5, repeat: selectedTheme === 'normal' ? Infinity : 0, repeatDelay: 2 }}
+              >
+                🎨
+              </motion.span>
+              <span className="relative z-10 font-bold">Normal Theme</span>
+              <span className={`text-sm relative z-10 px-2 py-1 rounded-full ${
+                selectedTheme === 'normal'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-green-100 text-green-700'
+              }`}>
+                Free
+              </span>
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className={`relative px-8 py-6 rounded-3xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden ${
+                selectedTheme === 'love'
+                  ? 'border-pink-600 bg-gradient-to-br from-pink-500 to-rose-600 text-white shadow-pink-500/50'
+                  : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-pink-400 hover:shadow-pink-200/50'
+              }`}
+              onClick={() => setSelectedTheme('love')}
+            >
+              <div className={`absolute inset-0 opacity-20 ${
+                selectedTheme === 'love'
+                  ? 'bg-gradient-to-br from-pink-400 to-rose-500'
+                  : 'bg-gradient-to-br from-pink-100 to-rose-100'
+              }`} />
+              <motion.span
+                className="text-4xl relative z-10"
+                animate={selectedTheme === 'love' ? {
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 10, -10, 0]
+                } : {}}
+                transition={{ duration: 1, repeat: selectedTheme === 'love' ? Infinity : 0, repeatDelay: 1.5 }}
+              >
+                💕
+              </motion.span>
+              <span className="relative z-10 font-bold">Love Theme</span>
+              <span className={`text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
+                selectedTheme === 'love'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-pink-100 text-pink-700'
+              }`}>
+                +₹30
+              </span>
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className={`relative px-8 py-6 rounded-3xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden ${
+                selectedTheme === 'birthday'
+                  ? 'border-yellow-500 bg-gradient-to-br from-yellow-400 to-orange-500 text-white shadow-yellow-500/50'
+                  : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-yellow-400 hover:shadow-yellow-200/50'
+              }`}
+              onClick={() => setSelectedTheme('birthday')}
+            >
+              <div className={`absolute inset-0 opacity-20 ${
+                selectedTheme === 'birthday'
+                  ? 'bg-gradient-to-br from-yellow-300 to-orange-400'
+                  : 'bg-gradient-to-br from-yellow-100 to-orange-100'
+              }`} />
+              <motion.span
+                className="text-4xl relative z-10"
+                animate={selectedTheme === 'birthday' ? {
+                  scale: [1, 1.1, 1],
+                  rotate: [0, -5, 5, 0]
+                } : {}}
+                transition={{ duration: 0.8, repeat: selectedTheme === 'birthday' ? Infinity : 0, repeatDelay: 2 }}
+              >
+                🎂
+              </motion.span>
+              <span className="relative z-10 font-bold">Birthday Theme</span>
+              <span className={`text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
+                selectedTheme === 'birthday'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-yellow-100 text-yellow-700'
+              }`}>
+                +₹30
+              </span>
+            </motion.button>
+          </div>
+        </div>
+
         {/* Templates Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {templates.map((template, index) => {
@@ -457,7 +587,7 @@ export default function TemplatesPage() {
                     {count === 0 ? (
                       <div className="space-y-2">
                         <button
-                          onClick={() => setPreviewTemplate(template.id)}
+                          onClick={() => openPreview(template.id)}
                           className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-all"
                         >
                           <FaEye /> View Sample
@@ -472,7 +602,7 @@ export default function TemplatesPage() {
                     ) : (
                       <div className="space-y-2">
                         <button
-                          onClick={() => setPreviewTemplate(template.id)}
+                          onClick={() => openPreview(template.id)}
                           className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-all"
                         >
                           <FaEye /> View Sample
@@ -528,7 +658,13 @@ export default function TemplatesPage() {
 
                   <div className="flex items-center gap-6">
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Total Amount</p>
+                      <p className="text-sm text-gray-600">Theme</p>
+                      <p className="text-base font-semibold">
+                        {selectedTheme === 'normal' && 'Normal (Free)'}
+                        {selectedTheme === 'love' && 'Love (+₹30)'}
+                        {selectedTheme === 'birthday' && 'Birthday (+₹30)'}
+                      </p>
+                      <p className="text-sm text-gray-600 mt-2">Total Amount</p>
                       <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                         ₹{getTotalPrice()}
                       </p>
@@ -667,59 +803,122 @@ export default function TemplatesPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setPreviewTemplate(null)}
-              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4"
             >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                onClick={(e) => e.stopPropagation()}
-                className="relative w-full max-w-6xl max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
-              >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-7xl h-[95vh] max-h-[95vh] bg-gradient-to-br from-white via-gray-50 to-purple-50 rounded-3xl shadow-2xl overflow-hidden border-4 border-white/50 flex flex-col mx-2 sm:mx-4"
+            >
                 {/* Close Button */}
                 <button
                   onClick={() => setPreviewTemplate(null)}
-                  className="absolute top-4 right-4 z-10 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+                  className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
                 >
-                  <FaTimes className="text-xl text-gray-700" />
+                  <FaTimes className="text-lg sm:text-xl text-gray-700" />
                 </button>
 
                 {/* Header */}
-                <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6">
-                  <h3 className="text-2xl font-bold">
-                    {templates.find(t => t.id === previewTemplate)?.name} - Sample Preview
-                  </h3>
-                  <p className="text-white/90 mt-1">
-                    This is how your page will look with your content
-                  </p>
+                <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white p-3 sm:p-4 flex flex-col gap-3 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 via-pink-500/90 to-orange-500/90" />
+                  <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%224%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20" />
+                  <div className="relative z-10">
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3">
+                      <span className="text-2xl sm:text-3xl lg:text-4xl">
+                        {previewTheme === 'love' ? '💕' : previewTheme === 'birthday' ? '🎂' : '🎨'}
+                      </span>
+                      <span className="text-sm sm:text-base lg:text-lg">
+                        {templates.find(t => t.id === previewTemplate)?.name} - Sample Preview
+                      </span>
+                    </h3>
+                    <p className="text-white/90 text-sm sm:text-base lg:text-lg">
+                      This is how your page will look with your content ✨
+                    </p>
+                  </div>
+                  {/* Theme Switcher for Preview */}
+                  <div className="flex flex-wrap gap-2 sm:gap-3 items-center justify-center sm:justify-start">
+                    <span className="font-semibold text-white text-sm sm:text-base">Theme:</span>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`relative px-3 sm:px-4 py-2 rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
+                        previewTheme === 'normal'
+                          ? 'border-white bg-white/20 text-white shadow-lg'
+                          : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
+                      }`}
+                      onClick={() => setPreviewTheme('normal')}
+                    >
+                      <span className="relative z-10 flex items-center gap-1">
+                        🎨 Normal
+                      </span>
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`relative px-3 sm:px-4 py-2 rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
+                        previewTheme === 'love'
+                          ? 'border-white bg-white/20 text-white shadow-lg'
+                          : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
+                      }`}
+                      onClick={() => setPreviewTheme('love')}
+                    >
+                      <span className="relative z-10 flex items-center gap-1">
+                        💕 Love
+                      </span>
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`relative px-3 sm:px-4 py-2 rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
+                        previewTheme === 'birthday'
+                          ? 'border-white bg-white/20 text-white shadow-lg'
+                          : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
+                      }`}
+                      onClick={() => setPreviewTheme('birthday')}
+                    >
+                      <span className="relative z-10 flex items-center gap-1">
+                        🎂 Birthday
+                      </span>
+                    </motion.button>
+                  </div>
                 </div>
 
                 {/* Preview Content */}
-                <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
-                  <TemplatePreview templateId={previewTemplate} />
+                <div className="flex-1 overflow-y-auto min-h-0">
+                  <TemplatePreview templateId={`${previewTemplate}-${previewTheme}`} />
                 </div>
 
                 {/* Footer Actions */}
-                <div className="bg-gray-50 p-6 border-t flex items-center justify-between">
-                  <p className="text-gray-600">
-                    Like what you see? Add this template to your cart!
-                  </p>
-                  <div className="flex gap-3">
-                    <button
+                <div className="bg-gradient-to-r from-gray-100 via-purple-50 to-pink-50 p-4 sm:p-6 border-t-4 border-purple-300 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 flex-shrink-0">
+                  <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+                    <span className="text-xl sm:text-2xl">
+                      {previewTheme === 'love' ? '💕' : previewTheme === 'birthday' ? '🎂' : '🎨'}
+                    </span>
+                    <p className="text-gray-700 font-medium text-sm sm:text-base">
+                      Like what you see? Add this template to your cart! 🛒
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => setPreviewTemplate(null)}
-                      className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all"
+                      className="px-6 py-3 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 rounded-xl font-semibold hover:from-gray-300 hover:to-gray-400 transition-all shadow-md border border-gray-300 w-full sm:w-auto"
                     >
                       Close
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => {
                         addTemplate(previewTemplate)
                         setPreviewTemplate(null)
                       }}
-                      className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+                      className="px-6 py-3 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 text-white rounded-xl font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2 shadow-lg border border-purple-500 w-full sm:w-auto"
                     >
-                      <FaPlus /> Add to Cart
-                    </button>
+                      <FaPlus className="text-sm" /> Add to Cart
+                    </motion.button>
                   </div>
                 </div>
               </motion.div>
