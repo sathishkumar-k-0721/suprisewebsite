@@ -7,12 +7,13 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { FaFileAlt, FaImage, FaVideo, FaImages, FaPlus, FaMinus, FaShoppingCart, FaArrowRight, FaEye, FaTimes, FaUser, FaSignOutAlt, FaBars, FaLock, FaMusic } from 'react-icons/fa'
 import TemplatePreview from '@/components/TemplatePreview'
+import { IconType } from 'react-icons'
 
 interface Template {
   id: string
   name: string
   description: string
-  icon: any
+  icon: IconType
   price: number
   features: string[]
   color: string
@@ -154,6 +155,17 @@ export default function TemplatesPage() {
   const [selectedTheme, setSelectedTheme] = useState<'normal' | 'love' | 'birthday'>('normal')
   // Preview theme state (independent from main selection)
   const [previewTheme, setPreviewTheme] = useState<'normal' | 'love' | 'birthday'>('normal')
+  // Date selection state
+  const [selectedDuration, setSelectedDuration] = useState<'trial' | 'extended' | 'lifetime'>('trial')
+  const [customFromDate, setCustomFromDate] = useState<string>(() => {
+    const today = new Date()
+    return today.toISOString().split('T')[0] // YYYY-MM-DD format
+  })
+  const [customToDate, setCustomToDate] = useState<string>(() => {
+    const thirtyDaysFromNow = new Date()
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30)
+    return thirtyDaysFromNow.toISOString().split('T')[0] // YYYY-MM-DD format
+  })
   // Helper function to open preview modal
   const openPreview = (templateId: string) => {
     setPreviewTemplate(templateId)
@@ -170,6 +182,18 @@ export default function TemplatesPage() {
       setIsLoading(false)
     }
   }, [status, router])
+
+  // Auto-switch to extended duration if date range exceeds 30 days
+  useEffect(() => {
+    if (customFromDate && customToDate && selectedDuration === 'trial') {
+      const fromDate = new Date(customFromDate)
+      const toDate = new Date(customToDate)
+      const daysDiff = Math.ceil((toDate.getTime() - fromDate.getTime()) / (1000 * 3600 * 24))
+      if (daysDiff > 30) {
+        setSelectedDuration('extended')
+      }
+    }
+  }, [customFromDate, customToDate, selectedDuration])
 
   // Load cart from database
   const loadCart = async () => {
@@ -224,6 +248,7 @@ export default function TemplatesPage() {
     setSelectedTemplates(prev => {
       const newCount = (prev[templateId] || 0) - 1
       if (newCount <= 0) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [templateId]: _, ...rest } = prev
         return rest
       }
@@ -237,12 +262,34 @@ export default function TemplatesPage() {
     return 0;
   }
 
+  const getDurationPrice = () => {
+    if (selectedDuration === 'lifetime') return 1000;
+
+    // For trial and extended, calculate based on actual date range
+    if (selectedDuration === 'trial' || selectedDuration === 'extended') {
+      const fromDate = new Date(customFromDate);
+      const toDate = new Date(customToDate);
+      const timeDiff = toDate.getTime() - fromDate.getTime();
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert to days
+
+      // First 30 days are free
+      if (daysDiff <= 30) return 0;
+
+      // Calculate additional 30-day periods
+      const additionalDays = daysDiff - 30;
+      const additionalPeriods = Math.ceil(additionalDays / 30);
+      return additionalPeriods * 30;
+    }
+
+    return 0;
+  }
+
   const getTotalPrice = () => {
     const templateTotal = Object.entries(selectedTemplates).reduce((total, [templateId, count]) => {
       const template = templates.find(t => t.id === templateId)
       return total + (template?.price || 0) * count
     }, 0)
-    return templateTotal + getThemePrice();
+    return templateTotal + getThemePrice() + getDurationPrice();
   }
 
   const getTotalPages = () => {
@@ -250,22 +297,34 @@ export default function TemplatesPage() {
   }
 
   const handleProceedToPayment = async () => {
-    // Store selected templates and theme for payment
+    // Store selected templates, theme, duration and dates for payment
     localStorage.setItem('selectedTemplates', JSON.stringify(selectedTemplates))
     localStorage.setItem('selectedTheme', selectedTheme)
+    localStorage.setItem('selectedDuration', selectedDuration)
+    localStorage.setItem('customFromDate', customFromDate)
+    localStorage.setItem('customToDate', customToDate)
+
     // Show payment success message
     const totalPages = getTotalPages()
     const totalPrice = getTotalPrice()
     let themeLabel = 'Normal Theme (Free)';
     if (selectedTheme === 'love') themeLabel = 'Love Theme (+₹30)';
     if (selectedTheme === 'birthday') themeLabel = 'Birthday Theme (+₹30)';
-    if (confirm(`✅ Payment Successful!\n\nTotal: ₹${totalPrice}\nPages: ${totalPages}\nTheme: ${themeLabel}\n\nClick OK to proceed to add your content.`)) {
+
+    let durationLabel = '30 Days Free Trial';
+    if (selectedDuration === 'extended') durationLabel = '+30 Days (+₹30)';
+    if (selectedDuration === 'lifetime') durationLabel = 'Lifetime Access (₹1000)';
+
+    if (confirm(`✅ Payment Successful!\n\nTotal: ₹${totalPrice}\nPages: ${totalPages}\nTheme: ${themeLabel}\nDuration: ${durationLabel}\nActive From: ${new Date(customFromDate).toLocaleDateString()}\nActive To: ${selectedDuration === 'lifetime' ? 'Forever' : new Date(customToDate).toLocaleDateString()}\n\nClick OK to proceed to add your content.`)) {
       // Store payment info
       const paymentInfo = {
         templates: selectedTemplates,
         amount: totalPrice,
         pages: totalPages,
         theme: selectedTheme,
+        duration: selectedDuration,
+        fromDate: customFromDate,
+        toDate: customToDate,
         timestamp: new Date().toISOString(),
         status: 'success',
         userEmail: session?.user?.email
@@ -537,6 +596,192 @@ export default function TemplatesPage() {
           </div>
         </div>
 
+        {/* Duration Selection */}
+        <div className="mb-10 flex flex-col items-center">
+          <motion.h2
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold mb-6 text-gray-800 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+          >
+            Choose Duration & Schedule 📅
+          </motion.h2>
+
+          {/* Duration Options */}
+          <div className="flex flex-wrap gap-6 justify-center mb-6">
+            <motion.button
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className={`relative px-6 py-4 rounded-2xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden min-w-[140px] ${
+                selectedDuration === 'trial'
+                  ? 'border-green-500 bg-gradient-to-br from-green-400 to-green-600 text-white shadow-green-500/50'
+                  : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-green-400 hover:shadow-green-200/50'
+              }`}
+              onClick={() => setSelectedDuration('trial')}
+            >
+              <div className={`absolute inset-0 opacity-20 ${
+                selectedDuration === 'trial'
+                  ? 'bg-gradient-to-br from-green-300 to-green-500'
+                  : 'bg-gradient-to-br from-green-100 to-green-200'
+              }`} />
+              <motion.span
+                className="text-3xl relative z-10"
+                animate={selectedDuration === 'trial' ? { rotate: [0, 5, -5, 0] } : {}}
+                transition={{ duration: 0.5, repeat: selectedDuration === 'trial' ? Infinity : 0, repeatDelay: 2 }}
+              >
+                🆓
+              </motion.span>
+              <span className="relative z-10 font-bold text-center">30 Days Free</span>
+              <span className={`text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
+                selectedDuration === 'trial'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-green-100 text-green-700'
+              }`}>
+                {selectedDuration === 'trial' && customFromDate && customToDate ? `₹${getDurationPrice()}` : 'Free'}
+              </span>
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className={`relative px-6 py-4 rounded-2xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden min-w-[140px] ${
+                selectedDuration === 'extended'
+                  ? 'border-blue-500 bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-blue-500/50'
+                  : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-blue-400 hover:shadow-blue-200/50'
+              }`}
+              onClick={() => setSelectedDuration('extended')}
+            >
+              <div className={`absolute inset-0 opacity-20 ${
+                selectedDuration === 'extended'
+                  ? 'bg-gradient-to-br from-blue-300 to-blue-500'
+                  : 'bg-gradient-to-br from-blue-100 to-blue-200'
+              }`} />
+              <motion.span
+                className="text-3xl relative z-10"
+                animate={selectedDuration === 'extended' ? {
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0]
+                } : {}}
+                transition={{ duration: 0.8, repeat: selectedDuration === 'extended' ? Infinity : 0, repeatDelay: 1.5 }}
+              >
+                ⏰
+              </motion.span>
+              <span className="relative z-10 font-bold text-center">+30 Days</span>
+              <span className={`text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
+                selectedDuration === 'extended'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-blue-100 text-blue-700'
+              }`}>
+                {selectedDuration === 'extended' && customFromDate && customToDate ? `₹${getDurationPrice()}` : '+₹30'}
+              </span>
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className={`relative px-6 py-4 rounded-2xl border-3 font-bold text-lg shadow-lg transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden min-w-[140px] ${
+                selectedDuration === 'lifetime'
+                  ? 'border-purple-500 bg-gradient-to-br from-purple-400 to-purple-600 text-white shadow-purple-500/50'
+                  : 'border-gray-300 bg-gradient-to-br from-white to-gray-50 text-gray-700 hover:border-purple-400 hover:shadow-purple-200/50'
+              }`}
+              onClick={() => setSelectedDuration('lifetime')}
+            >
+              <div className={`absolute inset-0 opacity-20 ${
+                selectedDuration === 'lifetime'
+                  ? 'bg-gradient-to-br from-purple-300 to-purple-500'
+                  : 'bg-gradient-to-br from-purple-100 to-purple-200'
+              }`} />
+              <motion.span
+                className="text-3xl relative z-10"
+                animate={selectedDuration === 'lifetime' ? {
+                  scale: [1, 1.1, 1],
+                  rotate: [0, -3, 3, 0]
+                } : {}}
+                transition={{ duration: 1, repeat: selectedDuration === 'lifetime' ? Infinity : 0, repeatDelay: 2 }}
+              >
+                ♾️
+              </motion.span>
+              <span className="relative z-10 font-bold text-center">Lifetime</span>
+              <span className={`text-sm relative z-10 px-2 py-1 rounded-full font-bold ${
+                selectedDuration === 'lifetime'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-purple-100 text-purple-700'
+              }`}>
+                ₹1000
+              </span>
+            </motion.button>
+          </div>
+
+          {/* Date Selection */}
+          {selectedDuration !== 'lifetime' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl shadow-lg p-6 max-w-md w-full"
+            >
+              <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">Schedule Your Website</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    From Date
+                  </label>
+                  <input
+                    type="date"
+                    value={customFromDate}
+                    onChange={(e) => {
+                      setCustomFromDate(e.target.value)
+                      // Auto-calculate to date based on duration
+                      if (selectedDuration === 'trial') {
+                        const fromDate = new Date(e.target.value)
+                        const toDate = new Date(fromDate)
+                        toDate.setDate(fromDate.getDate() + 30)
+                        setCustomToDate(toDate.toISOString().split('T')[0])
+                      } else if (selectedDuration === 'extended') {
+                        const fromDate = new Date(e.target.value)
+                        const toDate = new Date(fromDate)
+                        toDate.setDate(fromDate.getDate() + 60) // 30 + 30 days
+                        setCustomToDate(toDate.toISOString().split('T')[0])
+                      }
+                    }}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    To Date
+                  </label>
+                  <input
+                    type="date"
+                    value={customToDate}
+                    onChange={(e) => {
+                      setCustomToDate(e.target.value)
+                      // Auto-switch to extended duration if more than 30 days
+                      if (customFromDate && e.target.value) {
+                        const fromDate = new Date(customFromDate)
+                        const toDate = new Date(e.target.value)
+                        const daysDiff = Math.ceil((toDate.getTime() - fromDate.getTime()) / (1000 * 3600 * 24))
+                        if (daysDiff > 30 && selectedDuration === 'trial') {
+                          setSelectedDuration('extended')
+                        }
+                      }
+                    }}
+                    min={customFromDate}
+                    className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none text-gray-900 bg-white"
+                  />
+                </div>
+                <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                  <p className="font-medium mb-1">📅 Your website will be active:</p>
+                  <p>From: <span className="font-semibold text-purple-600">{new Date(customFromDate).toLocaleDateString()}</span></p>
+                  <p>To: <span className="font-semibold text-purple-600">{new Date(customToDate).toLocaleDateString()}</span></p>
+                  <p className="mt-2 font-medium">💰 Duration Cost: <span className="font-bold text-green-600">₹{getDurationPrice()}</span></p>
+                  {getDurationPrice() === 0 && <p className="text-xs text-green-600 mt-1">First 30 days are free!</p>}
+                  {getDurationPrice() > 0 && <p className="text-xs text-blue-600 mt-1">₹30 for each additional 30 days</p>}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+
         {/* Templates Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {templates.map((template, index) => {
@@ -642,41 +887,24 @@ export default function TemplatesPage() {
               exit={{ opacity: 0, y: 100 }}
               className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-purple-200 shadow-2xl z-50"
             >
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div className="flex items-center justify-between">
                   <div className="text-center md:text-left">
-                    <h3 className="text-xl font-bold text-gray-900">
+                    <h3 className="text-lg font-bold text-gray-900">
                       {getTotalPages()} Page{getTotalPages() > 1 ? 's' : ''} Selected
                     </h3>
-                    <p className="text-sm text-gray-600">
-                      {Object.entries(selectedTemplates).map(([id, count]) => {
-                        const template = templates.find(t => t.id === id)
-                        return `${template?.name} (${count})`
-                      }).join(', ')}
+                    <p className="text-sm font-semibold text-purple-600">
+                      Total: ₹{getTotalPrice()}
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-6">
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">Theme</p>
-                      <p className="text-base font-semibold">
-                        {selectedTheme === 'normal' && 'Normal (Free)'}
-                        {selectedTheme === 'love' && 'Love (+₹30)'}
-                        {selectedTheme === 'birthday' && 'Birthday (+₹30)'}
-                      </p>
-                      <p className="text-sm text-gray-600 mt-2">Total Amount</p>
-                      <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                        ₹{getTotalPrice()}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={handleProceedToPayment}
-                      className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-bold text-lg flex items-center gap-2 hover:shadow-2xl hover:scale-105 transition-all"
-                    >
-                      Make Payment <FaArrowRight />
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleProceedToPayment}
+                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-bold text-base flex items-center gap-2 hover:shadow-lg transition-all transform hover:scale-105"
+                  >
+                    <FaArrowRight className="text-sm" />
+                    Pay ₹{getTotalPrice()}
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -738,6 +966,7 @@ export default function TemplatesPage() {
                 ) : (
                   <>
                     <div className="space-y-4 mb-6">
+                      {/* Templates Section */}
                       {Object.entries(selectedTemplates).map(([id, count]) => {
                         const template = templates.find(t => t.id === id)
                         if (!template) return null
@@ -769,6 +998,63 @@ export default function TemplatesPage() {
                           </div>
                         )
                       })}
+
+                      {/* Theme Section */}
+                      {selectedTheme !== 'normal' && (
+                        <div className="bg-gray-50 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-gray-900">
+                              {selectedTheme === 'love' && 'Love Theme'}
+                              {selectedTheme === 'birthday' && 'Birthday Theme'}
+                            </h4>
+                            <span className="font-bold text-purple-600">₹30</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-gray-600">Theme customization</p>
+                            <button
+                              onClick={() => setSelectedTheme('normal')}
+                              className="text-red-500 hover:text-red-700 text-sm font-medium"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Duration Section */}
+                      {selectedDuration !== 'trial' && (
+                        <div className="bg-gray-50 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-gray-900">
+                              {selectedDuration === 'extended' && 'Extended Duration'}
+                              {selectedDuration === 'lifetime' && 'Lifetime Access'}
+                            </h4>
+                            <span className="font-bold text-purple-600">
+                              {selectedDuration === 'extended' && `₹${getDurationPrice()}`}
+                              {selectedDuration === 'lifetime' && '₹1000'}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-gray-600">
+                              {selectedDuration === 'extended' && `${Math.ceil((new Date(customToDate).getTime() - new Date(customFromDate).getTime()) / (1000 * 3600 * 24))} days access`}
+                              {selectedDuration === 'lifetime' && 'Unlimited access'}
+                            </p>
+                            <button
+                              onClick={() => {
+                                setSelectedDuration('trial')
+                                // Reset dates to 30 days when switching back to trial
+                                const fromDate = new Date(customFromDate)
+                                const toDate = new Date(fromDate)
+                                toDate.setDate(fromDate.getDate() + 30)
+                                setCustomToDate(toDate.toISOString().split('T')[0])
+                              }}
+                              className="text-red-500 hover:text-red-700 text-sm font-medium"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="border-t pt-4 mb-6">
@@ -782,9 +1068,10 @@ export default function TemplatesPage() {
 
                     <button
                       onClick={handleProceedToPayment}
-                      className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-bold text-lg flex items-center justify-center gap-2 hover:shadow-xl transition-all"
+                      className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-bold text-base flex items-center justify-center gap-2 hover:shadow-lg transition-all"
                     >
-                      Make Payment <FaArrowRight />
+                      <FaArrowRight className="text-sm" />
+                      Pay ₹{getTotalPrice()}
                     </button>
                   </>
                 )}

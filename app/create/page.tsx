@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import PageBuilder, { PageContent } from './page-builder'
 
@@ -58,6 +58,9 @@ export default function CreatePage() {
         body: JSON.stringify({
           title: 'My Surprise Website',
           theme: localStorage.getItem('selectedTheme') || 'normal',
+          duration: localStorage.getItem('selectedDuration') || 'trial',
+          fromDate: localStorage.getItem('customFromDate') || new Date().toISOString().split('T')[0],
+          toDate: localStorage.getItem('customToDate') || null,
           pages: pagesData
         })
       })
@@ -73,9 +76,10 @@ export default function CreatePage() {
       
       // Redirect to success page with website ID
       router.push(`/success?id=${data.websiteId}&url=${data.uniqueUrl}`)
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Upload Error:', error)
-      alert(error.message || 'Failed to upload content. Please try again.')
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload content. Please try again.'
+      alert(errorMessage)
     } finally {
       setLoading(false)
     }

@@ -145,13 +145,33 @@ export default function WebsitePage() {
     const fetchWebsite = async () => {
       try {
         const response = await fetch(`/api/website/${websiteId}`)
-        if (!response.ok) {
-          throw new Error('Website not found')
-        }
         const data = await response.json()
+
+        if (!response.ok) {
+          // Handle date validation errors
+          if (data.isEarlyAccess) {
+            setError(`🎁 This surprise website will be available from ${new Date(data.availableFrom).toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}!`)
+          } else if (data.isExpired) {
+            setError(`⏰ This surprise website was only available until ${new Date(data.expiredAt).toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}. Thank you for the memories! 💕`)
+          } else {
+            setError(data.message || data.error || 'Website not found')
+          }
+          return
+        }
+
         setWebsite(data)
-      } catch (err: any) {
-        setError(err.message)
+      } catch {
+        setError('Failed to load website')
       } finally {
         setLoading(false)
       }

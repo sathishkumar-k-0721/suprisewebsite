@@ -31,6 +31,12 @@ model Website {
   description String?
   theme       String?   @default("normal")
   isPublished Boolean   @default(false)
+  
+  // Date validity fields
+  validFrom   DateTime  @default(now())
+  validTo     DateTime?
+  durationType String   @default("trial") // trial, extended, lifetime
+  
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   pages       Page[]
@@ -64,6 +70,11 @@ model Payment {
   razorpayPaymentId String?
   razorpaySignature String?
   status            String   @default("pending") // pending, completed, failed
+  
+  // Duration information
+  durationType      String   @default("trial") // trial, extended, lifetime
+  validFrom         DateTime @default(now())
+  validTo           DateTime?
   
   // Selected pages
   page1Enabled      Boolean  @default(false)

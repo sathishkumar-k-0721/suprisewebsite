@@ -31,6 +31,31 @@ export async function GET(
       )
     }
 
+    // Check if website is within valid date range
+    const now = new Date()
+    const validFrom = new Date(website.validFrom)
+    const validTo = website.validTo ? new Date(website.validTo) : null
+
+    // If current date is before validFrom, show message
+    if (now < validFrom) {
+      return NextResponse.json({
+        error: 'Website not yet available',
+        message: `This website will be available from ${validFrom.toLocaleDateString()}`,
+        availableFrom: validFrom.toISOString(),
+        isEarlyAccess: true
+      }, { status: 403 })
+    }
+
+    // If current date is after validTo (and validTo exists), show expired message
+    if (validTo && now > validTo) {
+      return NextResponse.json({
+        error: 'Website access expired',
+        message: `This website was only available until ${validTo.toLocaleDateString()}`,
+        expiredAt: validTo.toISOString(),
+        isExpired: true
+      }, { status: 403 })
+    }
+
     return NextResponse.json(website)
   } catch (error) {
     console.error('Error fetching website:', error)

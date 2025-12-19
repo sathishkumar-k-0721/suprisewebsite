@@ -4,6 +4,11 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { nanoid } from 'nanoid'
 
+interface PageData {
+  templateId: string
+  content: Record<string, unknown>
+}
+
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -12,10 +17,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { title, pages, theme } = await req.json()
+    const { title, pages, theme, duration, fromDate, toDate } = await req.json()
 
     // Generate unique URL (8 characters, URL-safe)
     const uniqueUrl = nanoid(8)
+
+    // Calculate valid dates based on duration
+    const validFrom = new Date(fromDate || new Date())
+    let validTo: Date | null = null
+    const durationType = duration || 'trial'
+
+    if (durationType === 'trial') {
+      validTo = new Date(validFrom)
+      validTo.setDate(validFrom.getDate() + 30)
+    } else if (durationType === 'extended') {
+      validTo = new Date(validFrom)
+      validTo.setDate(validFrom.getDate() + 60) // 30 + 30 days
+    } else if (durationType === 'lifetime') {
+      validTo = null // No expiration for lifetime
+    } else if (toDate) {
+      validTo = new Date(toDate)
+    }
 
     // Create website with pages
     const website = await prisma.website.create({
@@ -25,8 +47,11 @@ export async function POST(req: NextRequest) {
         uniqueUrl,
         theme: theme || 'normal',
         isPublished: false,
+        validFrom,
+        validTo,
+        durationType,
         pages: {
-          create: pages.map((page: any, index: number) => ({
+          create: pages.map((page: PageData, index: number) => ({
             templateId: page.templateId,
             order: index,
             content: page.content,
