@@ -1,11 +1,13 @@
 'use client'
 
+import React from 'react'
 import { motion } from 'framer-motion'
 import { FaHeart, FaPlay, FaLock, FaMusic } from 'react-icons/fa'
 
 interface TemplatePreviewProps {
   templateId: string;
   theme?: 'normal' | 'love' | 'birthday';
+  fullScreen?: boolean;
 }
 
 // Love Theme Animated Hearts Component
@@ -172,7 +174,7 @@ function LoveThemeHearts() {
 // Love Theme Wrapper
 function LoveThemeWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative min-h-[600px] bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden">
+    <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden">
       <LoveThemeHearts />
       {/* Romantic overlay with multiple gradients */}
       <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
@@ -344,7 +346,7 @@ function BirthdayThemeElements() {
 // Birthday Theme Wrapper
 function BirthdayThemeWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative min-h-[600px] bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden">
+    <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden">
       <BirthdayThemeElements />
       {/* Enhanced festive overlays */}
       <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
@@ -362,11 +364,11 @@ function BirthdayThemeWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
+export default function TemplatePreview({ templateId, fullScreen = false }: TemplatePreviewProps) {
   // Text Only Templates
   if (templateId === 'text-only-normal') {
     return (
-      <div className="min-h-[600px] bg-gradient-to-br from-purple-900 via-purple-700 to-pink-700 flex items-center justify-center p-8">
+      <div className="h-full bg-gradient-to-br from-purple-900 via-purple-700 to-pink-700 flex items-center justify-center p-8">
         <div className="max-w-3xl text-center">
           <motion.div
             initial={{ scale: 0 }}
@@ -401,276 +403,280 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
 
   if (templateId === 'text-only-love') {
     return (
-      <LoveThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
-          <div className="max-w-3xl text-center">
+      <div className="h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 relative overflow-hidden flex items-center justify-center">
+        <LoveThemeHearts />
+        {/* Romantic overlay with multiple gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
+        <div className="relative z-10 max-w-3xl text-center p-8">
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{
+              scale: [0, 1.2, 1],
+              rotate: [-180, 20, 0]
+            }}
+            transition={{
+              delay: 0.3,
+              type: "spring",
+              stiffness: 200,
+              damping: 10
+            }}
+            className="mb-8"
+          >
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
               animate={{
-                scale: [0, 1.2, 1],
-                rotate: [-180, 20, 0]
+                scale: [1, 1.1, 1],
+                rotate: [0, 10, -10, 0]
               }}
               transition={{
-                delay: 0.3,
-                type: "spring",
-                stiffness: 200,
-                damping: 10
-              }}
-              className="mb-8"
-            >
-              <motion.div
-                animate={{
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 10, -10, 0]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <FaHeart className="text-8xl mx-auto text-red-500 drop-shadow-2xl filter brightness-110" />
-              </motion.div>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 50, scale: 0.8 }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1
-              }}
-              transition={{
-                delay: 0.5,
-                type: "spring",
-                stiffness: 100
-              }}
-              className="text-5xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-red-600 via-pink-600 to-red-800 bg-clip-text text-transparent drop-shadow-lg"
-            >
-              <motion.span
-                animate={{
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-                className="bg-gradient-to-r from-red-600 via-pink-600 to-red-800 bg-clip-text text-transparent bg-[length:200%_200%]"
-              >
-                Happy Birthday, My Love! 💕
-              </motion.span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.8 }}
-              className="text-xl md:text-2xl leading-relaxed text-red-800 font-medium"
-            >
-              <motion.span
-                animate={{
-                  textShadow: [
-                    '0 0 0px rgba(220, 38, 38, 0)',
-                    '0 0 20px rgba(220, 38, 38, 0.5)',
-                    '0 0 0px rgba(220, 38, 38, 0)'
-                  ]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                My dearest love, today is all about celebrating you and the beautiful person you are.
-                Every moment with you is a treasure, and I can&apos;t wait to create more memories together!
-              </motion.span>
-            </motion.p>
-
-            {/* Floating romantic elements around text */}
-            <motion.div
-              className="absolute top-1/4 left-1/4 text-3xl"
-              animate={{
-                y: [0, -10, 0],
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.1, 1]
-              }}
-              transition={{
-                duration: 3,
+                duration: 2,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
             >
-              💕
+              <FaHeart className="text-8xl mx-auto text-red-500 drop-shadow-2xl filter brightness-110" />
             </motion.div>
-            <motion.div
-              className="absolute top-1/3 right-1/4 text-2xl"
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 50, scale: 0.8 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1
+            }}
+            transition={{
+              delay: 0.5,
+              type: "spring",
+              stiffness: 100
+            }}
+            className="text-5xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-red-600 via-pink-600 to-red-800 bg-clip-text text-transparent drop-shadow-lg"
+          >
+            <motion.span
               animate={{
-                y: [0, 15, 0],
-                x: [0, 5, 0],
-                rotate: [0, -10, 10, 0]
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
               }}
               transition={{
-                duration: 4,
+                duration: 3,
                 repeat: Infinity,
-                ease: "easeInOut",
-                delay: 1
+                ease: "linear"
+              }}
+              className="bg-gradient-to-r from-red-600 via-pink-600 to-red-800 bg-clip-text text-transparent bg-[length:200%_200%]"
+            >
+              Happy Birthday, My Love! 💕
+            </motion.span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+            className="text-xl md:text-2xl leading-relaxed text-red-800 font-medium"
+          >
+            <motion.span
+              animate={{
+                textShadow: [
+                  '0 0 0px rgba(220, 38, 38, 0)',
+                  '0 0 20px rgba(220, 38, 38, 0.5)',
+                  '0 0 0px rgba(220, 38, 38, 0)'
+                ]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
               }}
             >
-              🌹
-            </motion.div>
-          </div>
+              My dearest love, today is all about celebrating you and the beautiful person you are.
+              Every moment with you is a treasure, and I can&apos;t wait to create more memories together!
+            </motion.span>
+          </motion.p>
         </div>
-      </LoveThemeWrapper>
+
+        {/* Floating romantic elements around text */}
+        <motion.div
+          className="absolute top-1/4 left-1/4 text-3xl"
+          animate={{
+            y: [0, -10, 0],
+            rotate: [0, 5, -5, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          💕
+        </motion.div>
+        <motion.div
+          className="absolute top-1/3 right-1/4 text-2xl"
+          animate={{
+            y: [0, 15, 0],
+            x: [0, 5, 0],
+            rotate: [0, -10, 10, 0]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        >
+          🌹
+        </motion.div>
+      </div>
     );
   }
 
   if (templateId === 'text-only-birthday') {
     return (
-      <BirthdayThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8 relative overflow-hidden">
-          <div className="max-w-3xl text-center">
+      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+        <BirthdayThemeElements />
+        {/* Enhanced festive overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400/15 via-transparent to-orange-400/15" />
+        <div className="relative z-10 max-w-3xl text-center p-8">
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{
+              scale: [0, 1.3, 1],
+              rotate: [-180, 30, 0]
+            }}
+            transition={{
+              delay: 0.3,
+              type: "spring",
+              stiffness: 200,
+              damping: 10
+            }}
+            className="mb-8"
+          >
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
               animate={{
-                scale: [0, 1.3, 1],
-                rotate: [-180, 30, 0]
+                scale: [1, 1.2, 1],
+                rotate: [0, 15, -15, 0]
               }}
               transition={{
-                delay: 0.3,
-                type: "spring",
-                stiffness: 200,
-                damping: 10
-              }}
-              className="mb-8"
-            >
-              <motion.div
-                animate={{
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 15, -15, 0]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <div className="text-8xl filter brightness-110">🎂</div>
-              </motion.div>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 50, scale: 0.8 }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1
-              }}
-              transition={{
-                delay: 0.5,
-                type: "spring",
-                stiffness: 100
-              }}
-              className="text-5xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-yellow-600 via-orange-600 to-pink-600 bg-clip-text text-transparent drop-shadow-lg"
-            >
-              <motion.span
-                animate={{
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-                className="bg-gradient-to-r from-yellow-600 via-orange-600 to-pink-600 bg-clip-text text-transparent bg-[length:200%_200%]"
-              >
-                Happy Birthday! 🎉
-              </motion.span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.8 }}
-              className="text-xl md:text-2xl leading-relaxed text-orange-900 font-medium"
-            >
-              <motion.span
-                animate={{
-                  textShadow: [
-                    '0 0 0px rgba(234, 88, 12, 0)',
-                    '0 0 20px rgba(234, 88, 12, 0.5)',
-                    '0 0 0px rgba(234, 88, 12, 0)'
-                  ]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                Time to celebrate! May your birthday be filled with joy, laughter, and all your favorite things.
-                Here&apos;s to another amazing year ahead filled with adventures and happiness!
-              </motion.span>
-            </motion.p>
-
-            {/* Floating birthday elements around text */}
-            <motion.div
-              className="absolute top-1/4 left-1/4 text-3xl"
-              animate={{
-                y: [0, -10, 0],
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.1, 1]
-              }}
-              transition={{
-                duration: 3,
+                duration: 2,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
             >
-              🎈
+              <div className="text-8xl filter brightness-110">🎂</div>
             </motion.div>
-            <motion.div
-              className="absolute top-1/3 right-1/4 text-2xl"
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 50, scale: 0.8 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1
+            }}
+            transition={{
+              delay: 0.5,
+              type: "spring",
+              stiffness: 100
+            }}
+            className="text-5xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-yellow-600 via-orange-600 to-pink-600 bg-clip-text text-transparent drop-shadow-lg"
+          >
+            <motion.span
               animate={{
-                y: [0, 15, 0],
-                x: [0, 5, 0],
-                rotate: [0, -10, 10, 0]
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
               }}
               transition={{
-                duration: 4,
+                duration: 3,
                 repeat: Infinity,
-                ease: "easeInOut",
-                delay: 1
+                ease: "linear"
               }}
+              className="bg-gradient-to-r from-yellow-600 via-orange-600 to-pink-600 bg-clip-text text-transparent bg-[length:200%_200%]"
             >
-              🎊
-            </motion.div>
-            <motion.div
-              className="absolute bottom-1/4 left-1/3 text-2xl"
+              Happy Birthday! 🎉
+            </motion.span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+            className="text-xl md:text-2xl leading-relaxed text-orange-900 font-medium"
+          >
+            <motion.span
               animate={{
-                y: [0, -8, 0],
-                rotate: [0, 20, -20, 0],
-                scale: [1, 1.2, 1]
+                textShadow: [
+                  '0 0 0px rgba(234, 88, 12, 0)',
+                  '0 0 20px rgba(234, 88, 12, 0.5)',
+                  '0 0 0px rgba(234, 88, 12, 0)'
+                ]
               }}
               transition={{
-                duration: 3.5,
+                duration: 2,
                 repeat: Infinity,
-                ease: "easeInOut",
-                delay: 2
+                ease: "easeInOut"
               }}
             >
-              🎆
-            </motion.div>
-          </div>
+              Time to celebrate! May your birthday be filled with joy, laughter, and all your favorite things.
+              Here&apos;s to another amazing year ahead filled with adventures and happiness!
+            </motion.span>
+          </motion.p>
         </div>
-      </BirthdayThemeWrapper>
+
+        {/* Floating birthday elements around text */}
+        <motion.div
+          className="absolute top-1/4 left-1/4 text-3xl"
+          animate={{
+            y: [0, -10, 0],
+            rotate: [0, 5, -5, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          🎈
+        </motion.div>
+        <motion.div
+          className="absolute top-1/3 right-1/4 text-2xl"
+          animate={{
+            y: [0, 15, 0],
+            x: [0, 5, 0],
+            rotate: [0, -10, 10, 0]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        >
+          🎊
+        </motion.div>
+        <motion.div
+          className="absolute bottom-1/4 left-1/3 text-2xl"
+          animate={{
+            y: [0, -8, 0],
+            rotate: [0, 20, -20, 0],
+            scale: [1, 1.2, 1]
+          }}
+          transition={{
+            duration: 3.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        >
+          🎆
+        </motion.div>
+      </div>
     );
   }
 
   // Text with Image Templates
   if (templateId === 'text-with-image-normal') {
     return (
-      <div className="min-h-[600px] bg-gradient-to-br from-blue-900 via-blue-700 to-cyan-700 flex items-center justify-center p-8">
+      <div className="h-full bg-gradient-to-br from-blue-900 via-blue-700 to-cyan-700 flex items-center justify-center p-8">
         <div className="max-w-6xl grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -705,8 +711,18 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
 
   if (templateId === 'text-with-image-love') {
     return (
-      <LoveThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden flex items-center justify-center">
+        <LoveThemeHearts />
+        {/* Romantic overlay with multiple gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,20,147,0.3) 2px, transparent 2px),
+                           radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
+          backgroundSize: '50px 50px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-6xl grid md:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -80, scale: 0.8 }}
@@ -820,14 +836,24 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </LoveThemeWrapper>
+      </div>
     );
   }
 
   if (templateId === 'text-with-image-birthday') {
     return (
-      <BirthdayThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+        <BirthdayThemeElements />
+        {/* Enhanced festive overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400/15 via-transparent to-orange-400/15" />
+        {/* Party pattern overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,165,0,0.4) 3px, transparent 3px),
+                           radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
+          backgroundSize: '60px 60px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-6xl grid md:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -80, scale: 0.8 }}
@@ -956,14 +982,14 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </BirthdayThemeWrapper>
+      </div>
     );
   }
 
   // Text with Video Templates
   if (templateId === 'text-with-video-normal') {
     return (
-      <div className="min-h-[600px] bg-gradient-to-br from-pink-900 via-pink-700 to-red-700 flex items-center justify-center p-8">
+      <div className="h-full bg-gradient-to-br from-pink-900 via-pink-700 to-red-700 flex items-center justify-center p-8">
         <div className="max-w-5xl text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
@@ -1001,8 +1027,18 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
 
   if (templateId === 'text-with-video-love') {
     return (
-      <LoveThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden flex items-center justify-center">
+        <LoveThemeHearts />
+        {/* Romantic overlay with multiple gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,20,147,0.3) 2px, transparent 2px),
+                           radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
+          backgroundSize: '50px 50px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-5xl text-center">
             <motion.h1
               initial={{ opacity: 0, y: -40, scale: 0.8 }}
@@ -1133,14 +1169,24 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </LoveThemeWrapper>
+      </div>
     );
   }
 
   if (templateId === 'text-with-video-birthday') {
     return (
-      <BirthdayThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+        <BirthdayThemeElements />
+        {/* Enhanced festive overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400/15 via-transparent to-orange-400/15" />
+        {/* Party pattern overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,165,0,0.4) 3px, transparent 3px),
+                           radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
+          backgroundSize: '60px 60px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-5xl text-center">
             <motion.h1
               initial={{ opacity: 0, y: -40, scale: 0.8 }}
@@ -1271,14 +1317,14 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </BirthdayThemeWrapper>
+      </div>
     );
   }
 
   // Text with Audio Templates
   if (templateId === 'text-with-audio-normal') {
     return (
-      <div className="min-h-[600px] bg-gradient-to-br from-teal-900 via-teal-700 to-cyan-700 flex items-center justify-center p-8">
+      <div className="h-full bg-gradient-to-br from-teal-900 via-teal-700 to-cyan-700 flex items-center justify-center p-8">
         <div className="max-w-4xl text-center">
           <motion.div
             initial={{ scale: 0, rotate: 180 }}
@@ -1326,8 +1372,18 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
 
   if (templateId === 'text-with-audio-love') {
     return (
-      <LoveThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden flex items-center justify-center">
+        <LoveThemeHearts />
+        {/* Romantic overlay with multiple gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,20,147,0.3) 2px, transparent 2px),
+                           radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
+          backgroundSize: '50px 50px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-4xl text-center">
             <motion.div
               initial={{ scale: 0, rotate: 180 }}
@@ -1502,14 +1558,24 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </LoveThemeWrapper>
+      </div>
     );
   }
 
   if (templateId === 'text-with-audio-birthday') {
     return (
-      <BirthdayThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+        <BirthdayThemeElements />
+        {/* Enhanced festive overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400/15 via-transparent to-orange-400/15" />
+        {/* Party pattern overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,165,0,0.4) 3px, transparent 3px),
+                           radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
+          backgroundSize: '60px 60px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-4xl text-center">
             <motion.div
               initial={{ scale: 0, rotate: 180 }}
@@ -1684,7 +1750,7 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </BirthdayThemeWrapper>
+      </div>
     );
   }
 
@@ -1699,7 +1765,7 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
     ];
 
     return (
-      <div className="min-h-[600px] bg-gradient-to-br from-green-900 via-green-700 to-teal-700 flex items-center justify-center p-8">
+      <div className="h-full bg-gradient-to-br from-green-900 via-green-700 to-teal-700 flex items-center justify-center p-8">
         <div className="max-w-6xl text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
@@ -1752,8 +1818,18 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
     ];
 
     return (
-      <LoveThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden flex items-center justify-center">
+        <LoveThemeHearts />
+        {/* Romantic overlay with multiple gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,20,147,0.3) 2px, transparent 2px),
+                           radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
+          backgroundSize: '50px 50px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-6xl text-center">
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
@@ -1793,7 +1869,7 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </LoveThemeWrapper>
+      </div>
     );
   }
 
@@ -1807,8 +1883,18 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
     ];
 
     return (
-      <BirthdayThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+        <BirthdayThemeElements />
+        {/* Enhanced festive overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400/15 via-transparent to-orange-400/15" />
+        {/* Party pattern overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,165,0,0.4) 3px, transparent 3px),
+                           radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
+          backgroundSize: '60px 60px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-6xl text-center">
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
@@ -1848,14 +1934,14 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </BirthdayThemeWrapper>
+      </div>
     );
   }
 
   // Treasure Hunt Templates
   if (templateId === 'treasure-hunt-normal') {
     return (
-      <div className="min-h-[600px] bg-gradient-to-br from-indigo-900 via-indigo-700 to-purple-700 flex items-center justify-center p-8">
+      <div className="h-full bg-gradient-to-br from-indigo-900 via-indigo-700 to-purple-700 flex items-center justify-center p-8">
         <div className="max-w-4xl text-center">
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
@@ -1916,8 +2002,18 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
 
   if (templateId === 'treasure-hunt-love') {
     return (
-      <LoveThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden flex items-center justify-center">
+        <LoveThemeHearts />
+        {/* Romantic overlay with multiple gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,20,147,0.3) 2px, transparent 2px),
+                           radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
+          backgroundSize: '50px 50px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-4xl text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
@@ -1973,14 +2069,24 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </LoveThemeWrapper>
+      </div>
     );
   }
 
   if (templateId === 'treasure-hunt-birthday') {
     return (
-      <BirthdayThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+        <BirthdayThemeElements />
+        {/* Enhanced festive overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400/15 via-transparent to-orange-400/15" />
+        {/* Party pattern overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,165,0,0.4) 3px, transparent 3px),
+                           radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
+          backgroundSize: '60px 60px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-4xl text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
@@ -2036,14 +2142,14 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </BirthdayThemeWrapper>
+      </div>
     );
   }
 
   // Treasure Hunt + Image Templates
   if (templateId === 'treasure-hunt-image-normal') {
     return (
-      <div className="min-h-[600px] bg-gradient-to-br from-violet-900 via-violet-700 to-purple-700 flex items-center justify-center p-8">
+      <div className="h-full bg-gradient-to-br from-violet-900 via-violet-700 to-purple-700 flex items-center justify-center p-8">
         <div className="max-w-4xl text-center">
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
@@ -2104,8 +2210,18 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
 
   if (templateId === 'treasure-hunt-image-love') {
     return (
-      <LoveThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden flex items-center justify-center">
+        <LoveThemeHearts />
+        {/* Romantic overlay with multiple gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,20,147,0.3) 2px, transparent 2px),
+                           radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
+          backgroundSize: '50px 50px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-4xl text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
@@ -2161,14 +2277,24 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </LoveThemeWrapper>
+      </div>
     );
   }
 
   if (templateId === 'treasure-hunt-image-birthday') {
     return (
-      <BirthdayThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+        <BirthdayThemeElements />
+        {/* Enhanced festive overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400/15 via-transparent to-orange-400/15" />
+        {/* Party pattern overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,165,0,0.4) 3px, transparent 3px),
+                           radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
+          backgroundSize: '60px 60px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-4xl text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
@@ -2224,14 +2350,14 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </BirthdayThemeWrapper>
+      </div>
     );
   }
 
   // Treasure Hunt + Video Templates
   if (templateId === 'treasure-hunt-video-normal') {
     return (
-      <div className="min-h-[600px] bg-gradient-to-br from-fuchsia-900 via-fuchsia-700 to-purple-700 flex items-center justify-center p-8">
+      <div className="h-full bg-gradient-to-br from-fuchsia-900 via-fuchsia-700 to-purple-700 flex items-center justify-center p-8">
         <div className="max-w-4xl text-center">
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
@@ -2292,8 +2418,18 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
 
   if (templateId === 'treasure-hunt-video-love') {
     return (
-      <LoveThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden flex items-center justify-center">
+        <LoveThemeHearts />
+        {/* Romantic overlay with multiple gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,20,147,0.3) 2px, transparent 2px),
+                           radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
+          backgroundSize: '50px 50px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-4xl text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
@@ -2349,14 +2485,24 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </LoveThemeWrapper>
+      </div>
     );
   }
 
   if (templateId === 'treasure-hunt-video-birthday') {
     return (
-      <BirthdayThemeWrapper>
-        <div className="min-h-[600px] flex items-center justify-center p-8">
+      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+        <BirthdayThemeElements />
+        {/* Enhanced festive overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-400/15 via-transparent to-orange-400/15" />
+        {/* Party pattern overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,165,0,0.4) 3px, transparent 3px),
+                           radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
+          backgroundSize: '60px 60px'
+        }} />
+        <div className="relative z-10 h-full flex items-center justify-center p-8">
           <div className="max-w-4xl text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
@@ -2412,7 +2558,7 @@ export default function TemplatePreview({ templateId }: TemplatePreviewProps) {
             </motion.div>
           </div>
         </div>
-      </BirthdayThemeWrapper>
+      </div>
     );
   }
 

@@ -1150,7 +1150,7 @@ export default function TemplatesPage() {
                     </p>
                   </div>
                   {/* Theme Switcher and Close Button */}
-                  <div className="relative z-10 flex flex-col items-center gap-2 sm:gap-3">
+                  <div className="relative z-10 flex flex-row items-center gap-2 sm:gap-3">
                     <div className="flex flex-wrap gap-1 sm:gap-2 lg:gap-3 items-center justify-center">
                       <motion.button
                         whileHover={{ scale: 1.05 }}

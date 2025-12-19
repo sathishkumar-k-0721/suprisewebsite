@@ -1,10 +1,120 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { FaHeart, FaVideo, FaImage, FaMusic, FaGift, FaArrowRight } from 'react-icons/fa'
+import { useState, useEffect } from 'react'
+import { FaGift, FaArrowRight, FaLock, FaKey, FaTimes, FaArrowLeft, FaPause, FaPlay } from 'react-icons/fa'
+import TemplatePreview from '@/components/TemplatePreview'
 
 export default function Home() {
+  const [showDemo, setShowDemo] = useState(false)
+  const [demoStep, setDemoStep] = useState<'theme' | 'demo'>('theme')
+  const [selectedDemoTheme, setSelectedDemoTheme] = useState<'normal' | 'love' | 'birthday'>('normal')
+  const [currentDemoTemplate, setCurrentDemoTemplate] = useState(0)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+
+  // Auto-play functionality
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null
+
+    if (showDemo && demoStep === 'demo' && isAutoPlaying) {
+      interval = setInterval(() => {
+        if (currentDemoTemplate < demoTemplates.length - 1) {
+          setCurrentDemoTemplate(prev => prev + 1)
+        } else {
+          // Demo completed
+          setShowDemo(false)
+          setDemoStep('theme')
+          setCurrentDemoTemplate(0)
+          setIsAutoPlaying(true)
+        }
+      }, 8000) // 8 seconds interval - slow transitions
+    }
+
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [showDemo, demoStep, isAutoPlaying, currentDemoTemplate])
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (!showDemo || demoStep !== 'demo') return
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        prevTemplate()
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        nextTemplate()
+      } else if (event.key === ' ') {
+        event.preventDefault()
+        setIsAutoPlaying(prev => !prev)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [showDemo, demoStep, currentDemoTemplate])
+
+  // Demo templates data
+  const demoTemplates = [
+    { id: 'text-only', name: 'Text Only Page' },
+    { id: 'text-with-image', name: 'Text with Image' },
+    { id: 'text-with-video', name: 'Text with Video' },
+    { id: 'photo-gallery', name: 'Photo Gallery' },
+    { id: 'treasure-hunt', name: 'Treasure Hunt' }
+  ]
+
+  const getThemeColors = (theme: string) => {
+    switch (theme) {
+      case 'love':
+        return {
+          primary: 'from-pink-500 to-rose-600',
+          secondary: 'from-pink-100 to-rose-100',
+          accent: 'text-pink-600',
+          bg: 'bg-pink-50'
+        }
+      case 'birthday':
+        return {
+          primary: 'from-yellow-400 to-orange-500',
+          secondary: 'from-yellow-100 to-orange-100',
+          accent: 'text-yellow-600',
+          bg: 'bg-yellow-50'
+        }
+      default:
+        return {
+          primary: 'from-purple-500 to-purple-700',
+          secondary: 'from-purple-100 to-purple-200',
+          accent: 'text-purple-600',
+          bg: 'bg-purple-50'
+        }
+    }
+  }
+
+  const startDemo = () => {
+    setShowDemo(true)
+  }
+
+  const nextTemplate = () => {
+    if (currentDemoTemplate < demoTemplates.length - 1) {
+      setCurrentDemoTemplate(currentDemoTemplate + 1)
+    } else {
+      // Demo completed
+      setShowDemo(false)
+      setDemoStep('theme')
+      setCurrentDemoTemplate(0)
+    }
+  }
+
+  const prevTemplate = () => {
+    if (currentDemoTemplate > 0) {
+      setCurrentDemoTemplate(currentDemoTemplate - 1)
+    }
+  }
+
+  const themeColors = getThemeColors(selectedDemoTheme)
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-red-50">
       {/* Hero Section */}
@@ -75,15 +185,14 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/preview">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-base font-semibold shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 flex items-center gap-2"
-                >
-                  See Demo <FaArrowRight />
-                </motion.button>
-              </Link>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowDemo(true)}
+                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-base font-semibold shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 flex items-center gap-2"
+              >
+                See Demo <FaArrowRight />
+              </motion.button>
 
               <Link href="/auth/login?callbackUrl=/templates">
                 <motion.button
@@ -199,6 +308,149 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* Full-Screen Demo */}
+      <AnimatePresence>
+        {showDemo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black z-50 flex flex-col"
+          >
+            <AnimatePresence mode="wait">
+              {demoStep === 'theme' ? (
+                /* Theme Selection */
+                <motion.div
+                  key="theme"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="flex-1 flex items-center justify-center p-8"
+                >
+                  <div className="text-center space-y-8 max-w-2xl mx-auto">
+                    <div className="text-6xl mb-4">
+                      {selectedDemoTheme === 'love' ? '💕' : selectedDemoTheme === 'birthday' ? '🎂' : '🎨'}
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Choose Your Demo Theme</h2>
+                    <p className="text-white/90 text-lg mb-8">Select a theme to see how your surprise website will look!</p>
+
+                    <div className="flex gap-6 justify-center flex-wrap">
+                      {[
+                        { id: 'normal', name: 'Normal Theme', emoji: '🎨', desc: 'Classic and elegant' },
+                        { id: 'love', name: 'Love Theme', emoji: '💕', desc: 'Romantic and sweet' },
+                        { id: 'birthday', name: 'Birthday Theme', emoji: '🎂', desc: 'Fun and celebratory' }
+                      ].map((theme) => (
+                        <motion.button
+                          key={theme.id}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            setSelectedDemoTheme(theme.id as 'normal' | 'love' | 'birthday')
+                            setDemoStep('demo')
+                            setIsAutoPlaying(true) // Start auto-playing when demo begins
+                          }}
+                          className={`px-8 py-6 rounded-2xl border-2 font-semibold transition-all flex flex-col items-center gap-3 min-w-[180px] ${
+                            selectedDemoTheme === theme.id
+                              ? `border-white bg-white/20 text-white shadow-lg`
+                              : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
+                          }`}
+                        >
+                          <span className="text-4xl">{theme.emoji}</span>
+                          <span className="text-lg font-bold">{theme.name}</span>
+                          <span className="text-sm text-white/70">{theme.desc}</span>
+                        </motion.button>
+                      ))}
+                    </div>
+
+                    <div className="pt-8">
+                      <button
+                        onClick={() => setShowDemo(false)}
+                        className="text-white/60 hover:text-white text-lg transition-colors"
+                      >
+                        Cancel Demo
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                /* Full-Screen Demo */
+                <>
+                  {/* Demo Header - Simple Line */}
+                  <div className="h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setShowDemo(false)}
+                    className="absolute top-4 right-4 z-30 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-black/70 transition-all duration-300"
+                    title="Close Demo"
+                  >
+                    <FaTimes />
+                  </button>
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      {demoTemplates.map((_, index) => (
+                        <motion.div
+                          key={index}
+                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                            index === currentDemoTemplate
+                              ? 'bg-white scale-125'
+                              : index < currentDemoTemplate
+                              ? 'bg-white/60'
+                              : 'bg-white/30'
+                          }`}
+                          animate={index === currentDemoTemplate ? { scale: [1, 1.2, 1] } : {}}
+                          transition={{ duration: 0.5, repeat: index === currentDemoTemplate ? Infinity : 0 }}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-white/80 text-sm font-medium">
+                      {currentDemoTemplate + 1} / {demoTemplates.length}
+                    </span>
+                    <button
+                      onClick={() => setIsAutoPlaying(prev => !prev)}
+                      className="text-white/80 hover:text-white text-lg transition-colors ml-2"
+                      title={isAutoPlaying ? 'Pause auto-play' : 'Resume auto-play'}
+                    >
+                      {isAutoPlaying ? <FaPause /> : <FaPlay />}
+                    </button>
+                  </div>
+
+                  {/* Demo Content - Full Template Preview */}
+                  <div className="flex-1 overflow-hidden relative">
+                    <div className="absolute inset-0 w-full h-full">
+                      <TemplatePreview templateId={`${demoTemplates[currentDemoTemplate].id}-${selectedDemoTheme}`} fullScreen={true} />
+                    </div>
+
+                    {/* Left Navigation Arrow */}
+                    <button
+                      onClick={() => {
+                        prevTemplate()
+                      }}
+                      disabled={currentDemoTemplate === 0}
+                      className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 w-16 h-16 rounded-full bg-white/90 backdrop-blur-sm border-2 border-white/50 text-purple-600 hover:bg-white hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl shadow-lg ${
+                        currentDemoTemplate === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:scale-110'
+                      }`}
+                    >
+                      <FaArrowLeft />
+                    </button>
+
+                    {/* Right Navigation Arrow */}
+                    <button
+                      onClick={() => {
+                        nextTemplate()
+                      }}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-16 h-16 rounded-full bg-white/90 backdrop-blur-sm border-2 border-white/50 text-purple-600 hover:bg-white hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl shadow-lg hover:scale-110"
+                    >
+                      <FaArrowRight />
+                    </button>
+                  </div>
+                </>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   )
 }
