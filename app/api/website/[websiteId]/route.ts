@@ -33,7 +33,7 @@ export async function GET(
 
     // Check if website is within valid date range
     const now = new Date()
-    const validFrom = new Date(website.validFrom)
+    const validFrom = new Date(website.validFrom || now)
     const validTo = website.validTo ? new Date(website.validTo) : null
 
     // If current date is before validFrom, show message
