@@ -1,47 +1,79 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import PageBuilder, { PageContent } from './page-builder'
 
 export default function CreatePage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [loading, setLoading] = useState(false)
 
-  // Removed authentication requirement for now
-  // Users can proceed directly to add content without logging in
+  // Check authentication
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/login?callbackUrl=/create')
+    }
+  }, [status, router])
+
+  // Show loading while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-red-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Don't render if not authenticated
+  if (status === 'unauthenticated') {
+    return null
+  }
 
   const handleComplete = async (pages: PageContent[]) => {
     setLoading(true)
 
     try {
-      // Convert files to base64 for storage
-      const convertToBase64 = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader()
-          reader.readAsDataURL(file)
-          reader.onload = () => resolve(reader.result as string)
-          reader.onerror = error => reject(error)
+      // Upload files and get URLs
+      const uploadFile = async (file: File, type: string): Promise<string> => {
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('type', type)
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
         })
+
+        if (!response.ok) {
+          throw new Error('Failed to upload file')
+        }
+
+        const data = await response.json()
+        return data.url
       }
 
-      // Prepare content for each page with base64 encoded media
+      // Prepare content for each page with uploaded file URLs
       const pagesData = await Promise.all(pages.map(async page => {
-        const imageData = page.image ? await convertToBase64(page.image) : null
-        const videoData = page.video ? await convertToBase64(page.video) : null
-        const audioData = page.audio ? await convertToBase64(page.audio) : null
-        const galleryData = page.galleryImages?.length > 0 
-          ? await Promise.all(page.galleryImages.map(img => convertToBase64(img)))
+        const imageUrl = page.image ? await uploadFile(page.image, 'image') : null
+        const videoUrl = page.video ? await uploadFile(page.video, 'video') : null
+        const audioUrl = page.audio ? await uploadFile(page.audio, 'audio') : null
+        const galleryUrls = page.galleryImages?.length > 0 
+          ? await Promise.all(page.galleryImages.map(img => uploadFile(img, 'image')))
           : []
 
         return {
           templateId: page.templateId,
           content: {
             text: page.text || '',
-            image: imageData,
-            video: videoData,
-            audio: audioData,
-            gallery: galleryData,
+            image: imageUrl,
+            video: videoUrl,
+            audio: audioUrl,
+            gallery: galleryUrls,
             // Treasure hunt specific fields
             clue1: page.clue1 || null,
             clue2: page.clue2 || null,

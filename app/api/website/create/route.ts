@@ -19,6 +19,18 @@ export async function POST(req: NextRequest) {
 
     const { title, pages, theme, duration, fromDate, toDate } = await req.json()
 
+    // Validate required fields
+    if (!pages || !Array.isArray(pages) || pages.length === 0) {
+      return NextResponse.json({ error: 'Pages data is required' }, { status: 400 })
+    }
+
+    // Validate each page has required fields
+    for (const page of pages) {
+      if (!page.templateId || !page.content) {
+        return NextResponse.json({ error: 'Each page must have templateId and content' }, { status: 400 })
+      }
+    }
+
     // Generate unique URL (8 characters, URL-safe)
     const uniqueUrl = nanoid(8)
 

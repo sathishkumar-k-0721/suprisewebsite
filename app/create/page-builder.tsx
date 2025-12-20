@@ -100,7 +100,12 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
             text: '',
             image: null,
             video: null,
-            galleryImages: []
+            galleryImages: [],
+            clue1: '',
+            clue2: '',
+            clue3: '',
+            password: '',
+            audio: null
           })
         }
       })

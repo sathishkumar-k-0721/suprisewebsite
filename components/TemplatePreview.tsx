@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { FaHeart, FaPlay, FaLock, FaMusic } from 'react-icons/fa'
+import { FaHeart, FaPlay, FaLock, FaMusic, FaVolumeUp, FaExpand, FaChevronRight, FaImage, FaVideo } from 'react-icons/fa'
 
 interface TemplatePreviewProps {
   templateId: string;
@@ -989,13 +989,13 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
   // Text with Video Templates
   if (templateId === 'text-with-video-normal') {
     return (
-      <div className="h-full bg-gradient-to-br from-pink-900 via-pink-700 to-red-700 flex items-center justify-center p-8">
-        <div className="max-w-5xl text-center">
+      <div className="bg-gradient-to-br from-pink-900 via-pink-700 to-red-700 p-4 sm:p-8">
+        <div className="max-w-5xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-4xl md:text-6xl font-bold mb-6 text-white"
+            className="text-4xl md:text-6xl font-bold mb-6 text-white text-center"
           >
             A Special Message for You
           </motion.h1>
@@ -1004,7 +1004,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-xl md:text-2xl mb-8 text-white/90"
+            className="text-xl md:text-2xl mb-8 text-white/90 text-center"
           >
             I created this video montage just for you! Watch all our favorite moments come to life.
           </motion.p>
@@ -1013,12 +1013,72 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.7 }}
-            className="bg-black/30 backdrop-blur-sm rounded-2xl p-12 aspect-video flex items-center justify-center"
+            className="relative bg-black/30 backdrop-blur-sm rounded-2xl p-8 aspect-video flex items-center justify-center border-2 border-white/20 shadow-2xl mx-auto max-w-4xl"
           >
-            <div className="text-center">
-              <div className="text-6xl mb-4">🎬</div>
-              <p className="text-white/60">Video Player Preview</p>
+            {/* Video player mockup */}
+            <div className="relative w-full h-full rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-black flex items-center justify-center">
+              {/* Video thumbnail placeholder */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 via-purple-900/50 to-pink-900/50" />
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%224%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20" />
+
+              {/* Play button */}
+              <motion.div
+                className="relative z-10 bg-white/20 backdrop-blur-md rounded-full p-6 border-2 border-white/30"
+                animate={{
+                  scale: [1, 1.1, 1],
+                  boxShadow: [
+                    '0 0 0 0 rgba(255,255,255,0.4)',
+                    '0 0 0 20px rgba(255,255,255,0)',
+                    '0 0 0 0 rgba(255,255,255,0)'
+                  ]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <FaPlay className="text-4xl text-white ml-1" />
+                </motion.div>
+              </motion.div>
+
+              {/* Video controls overlay */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                <div className="flex items-center justify-between text-white">
+                  <div className="flex items-center gap-2">
+                    <FaPlay className="text-sm" />
+                    <div className="w-32 h-1 bg-white/30 rounded-full">
+                      <div className="w-1/3 h-full bg-white rounded-full"></div>
+                    </div>
+                    <span className="text-sm">0:45 / 2:30</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FaVolumeUp className="text-sm" />
+                    <FaExpand className="text-sm" />
+                  </div>
+                </div>
+              </div>
             </div>
+
+            {/* Floating elements */}
+            <motion.div
+              className="absolute top-4 right-4 text-2xl"
+              animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, 10, -10, 0]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              🎬
+            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -1027,7 +1087,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
 
   if (templateId === 'text-with-video-love') {
     return (
-      <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden flex items-center justify-center">
+      <div className="relative bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden">
         <LoveThemeHearts />
         {/* Romantic overlay with multiple gradients */}
         <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
@@ -1038,8 +1098,8 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
                            radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
           backgroundSize: '50px 50px'
         }} />
-        <div className="relative z-10 h-full flex items-center justify-center p-8">
-          <div className="max-w-5xl text-center">
+        <div className="relative z-10 p-4 sm:p-8">
+          <div className="max-w-5xl mx-auto text-center">
             <motion.h1
               initial={{ opacity: 0, y: -40, scale: 0.8 }}
               animate={{
@@ -1175,7 +1235,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
 
   if (templateId === 'text-with-video-birthday') {
     return (
-      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+      <div className="relative bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden">
         <BirthdayThemeElements />
         {/* Enhanced festive overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
@@ -1186,8 +1246,8 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
                            radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
           backgroundSize: '60px 60px'
         }} />
-        <div className="relative z-10 h-full flex items-center justify-center p-8">
-          <div className="max-w-5xl text-center">
+        <div className="relative z-10 p-4 sm:p-8">
+          <div className="max-w-5xl mx-auto text-center">
             <motion.h1
               initial={{ opacity: 0, y: -40, scale: 0.8 }}
               animate={{
@@ -1765,13 +1825,13 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
     ];
 
     return (
-      <div className="h-full bg-gradient-to-br from-green-900 via-green-700 to-teal-700 flex items-center justify-center p-8">
-        <div className="max-w-6xl text-center">
+      <div className="bg-gradient-to-br from-green-900 via-green-700 to-teal-700 p-4 sm:p-8">
+        <div className="max-w-6xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-4xl md:text-6xl font-bold mb-4 text-white"
+            className="text-4xl md:text-6xl font-bold mb-4 text-white text-center"
           >
             Our Journey Together 📸
           </motion.h1>
@@ -1780,7 +1840,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-xl md:text-2xl mb-12 text-white/90"
+            className="text-xl md:text-2xl mb-12 text-white/90 text-center"
           >
             A collection of our most cherished moments
           </motion.p>
@@ -1789,19 +1849,72 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="grid grid-cols-2 md:grid-cols-3 gap-4"
+            className="relative"
           >
-            {images.map((img, idx) => (
-              <motion.img
-                key={idx}
-                src={img}
-                alt={`Gallery ${idx + 1}`}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8 + idx * 0.1 }}
-                className="rounded-xl shadow-xl w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+            {/* Main featured image */}
+            <motion.div
+              className="mb-8"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
+            >
+              <img
+                src={images[0]}
+                alt="Featured memory"
+                className="w-full max-w-2xl mx-auto h-64 object-cover rounded-2xl shadow-2xl border-4 border-white/20"
               />
-            ))}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent rounded-2xl" />
+              <div className="absolute bottom-4 left-4 text-white">
+                <p className="text-lg font-semibold">Our First Date</p>
+                <p className="text-sm opacity-90">That magical evening ✨</p>
+              </div>
+            </motion.div>
+
+            {/* Gallery grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {images.slice(1).map((img, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.8 + idx * 0.1 }}
+                  whileHover={{
+                    scale: 1.05,
+                    rotate: 2,
+                    boxShadow: "0 20px 40px rgba(0,0,0,0.3)"
+                  }}
+                  className="relative group cursor-pointer"
+                >
+                  <img
+                    src={img}
+                    alt={`Gallery ${idx + 2}`}
+                    className="w-full h-32 object-cover rounded-xl shadow-xl transition-all duration-300 group-hover:brightness-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-2 left-2 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    Memory #{idx + 2}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Navigation dots */}
+            <div className="flex justify-center gap-2 mt-6">
+              {[0, 1, 2, 3, 4].map((dot) => (
+                <motion.div
+                  key={dot}
+                  className={`w-3 h-3 rounded-full ${dot === 0 ? 'bg-white' : 'bg-white/40'}`}
+                  animate={dot === 0 ? {
+                    scale: [1, 1.2, 1],
+                    opacity: [1, 0.7, 1]
+                  } : {}}
+                  transition={{
+                    duration: 2,
+                    repeat: dot === 0 ? Infinity : 0,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+            </div>
           </motion.div>
         </div>
       </div>
@@ -1818,7 +1931,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
     ];
 
     return (
-      <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden flex items-center justify-center">
+      <div className="relative bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden">
         <LoveThemeHearts />
         {/* Romantic overlay with multiple gradients */}
         <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
@@ -1829,8 +1942,8 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
                            radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
           backgroundSize: '50px 50px'
         }} />
-        <div className="relative z-10 h-full flex items-center justify-center p-8">
-          <div className="max-w-6xl text-center">
+        <div className="relative z-10 p-4 sm:p-8">
+          <div className="max-w-6xl mx-auto text-center">
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1883,7 +1996,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
     ];
 
     return (
-      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+      <div className="relative bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden">
         <BirthdayThemeElements />
         {/* Enhanced festive overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
@@ -1894,8 +2007,8 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
                            radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
           backgroundSize: '60px 60px'
         }} />
-        <div className="relative z-10 h-full flex items-center justify-center p-8">
-          <div className="max-w-6xl text-center">
+        <div className="relative z-10 p-4 sm:p-8">
+          <div className="max-w-6xl mx-auto text-center">
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1941,14 +2054,29 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
   // Treasure Hunt Templates
   if (templateId === 'treasure-hunt-normal') {
     return (
-      <div className="h-full bg-gradient-to-br from-indigo-900 via-indigo-700 to-purple-700 flex items-center justify-center p-8">
-        <div className="max-w-4xl text-center">
+      <div className="bg-gradient-to-br from-indigo-900 via-indigo-700 to-purple-700 p-4 sm:p-8">
+        <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.3, type: "spring" }}
+            className="relative mb-8"
           >
-            <FaLock className="text-8xl mx-auto mb-8 text-yellow-300" />
+            <FaLock className="text-8xl mx-auto text-yellow-300 drop-shadow-lg" />
+            <motion.div
+              className="absolute -top-2 -right-2 text-2xl"
+              animate={{
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              🔒
+            </motion.div>
           </motion.div>
 
           <motion.h1
@@ -1960,39 +2088,116 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             Solve the Clues! 🔐
           </motion.h1>
 
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-xl mb-8 text-white/80"
+          >
+            Follow the trail of clues to unlock your surprise!
+          </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="space-y-4 mb-8"
+            className="space-y-6 mb-8"
           >
-            {['Where we first met...', 'Your favorite place...', 'Our special song...'].map((clue, idx) => (
-              <div
+            {[
+              { clue: 'Where we first met...', emoji: '🏙️', hint: 'That special spot in the city' },
+              { clue: 'Your favorite place...', emoji: '🏖️', hint: 'Where you feel most at peace' },
+              { clue: 'Our special song...', emoji: '🎵', hint: 'The melody that reminds us of us' }
+            ].map((item, idx) => (
+              <motion.div
                 key={idx}
-                className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 + idx * 0.1 }}
+                className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20 shadow-xl hover:bg-white/15 transition-all duration-300"
               >
                 <div className="flex items-start gap-4">
-                  <span className="text-2xl font-bold text-yellow-300">#{idx + 1}</span>
-                  <p className="text-lg text-left flex-1">{clue}</p>
+                  <motion.div
+                    className="flex-shrink-0 w-12 h-12 bg-yellow-300/20 rounded-full flex items-center justify-center border-2 border-yellow-300/30"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      boxShadow: [
+                        '0 0 0 0 rgba(255,255,0,0.3)',
+                        '0 0 0 10px rgba(255,255,0,0)',
+                        '0 0 0 0 rgba(255,255,0,0)'
+                      ]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: idx * 0.5,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <span className="text-2xl font-bold text-yellow-300">#{idx + 1}</span>
+                  </motion.div>
+                  <div className="flex-1 text-left">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-2xl">{item.emoji}</span>
+                      <p className="text-lg text-white font-medium">{item.clue}</p>
+                    </div>
+                    <p className="text-sm text-white/60 italic">{item.hint}</p>
+                  </div>
+                  <motion.div
+                    animate={{
+                      rotate: [0, 5, -5, 0],
+                      scale: [1, 1.05, 1]
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      delay: idx * 0.3,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <FaChevronRight className="text-yellow-300 text-xl" />
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
+            transition={{ delay: 1.2 }}
             className="max-w-md mx-auto"
           >
-            <input
-              type="text"
-              placeholder="Enter password to unlock..."
-              className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 text-center text-lg mb-4"
-              readOnly
-            />
-            <div className="text-sm text-white/60">
-              🎵 Hidden audio message + secret text revealed after unlock!
+            <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20 shadow-xl">
+              <motion.input
+                type="text"
+                placeholder="Enter password to unlock..."
+                className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 text-center text-lg mb-4 focus:outline-none focus:border-yellow-300 transition-colors"
+                readOnly
+                animate={{
+                  boxShadow: [
+                    '0 0 0 0 rgba(255,255,255,0.2)',
+                    '0 0 0 8px rgba(255,255,255,0)',
+                    '0 0 0 0 rgba(255,255,255,0)'
+                  ]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.button
+                className="w-full py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold rounded-lg hover:from-yellow-500 hover:to-yellow-700 transition-all duration-300 shadow-lg"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                🔓 Unlock Treasure
+              </motion.button>
+            </div>
+            <div className="text-sm text-white/60 mt-4 flex items-center justify-center gap-2">
+              <FaMusic className="text-yellow-300" />
+              <span>Hidden audio message + secret text revealed!</span>
+              <FaMusic className="text-yellow-300" />
             </div>
           </motion.div>
         </div>
@@ -2002,7 +2207,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
 
   if (templateId === 'treasure-hunt-love') {
     return (
-      <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden flex items-center justify-center">
+      <div className="relative bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden">
         <LoveThemeHearts />
         {/* Romantic overlay with multiple gradients */}
         <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
@@ -2013,8 +2218,8 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
                            radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
           backgroundSize: '50px 50px'
         }} />
-        <div className="relative z-10 h-full flex items-center justify-center p-8">
-          <div className="max-w-4xl text-center">
+        <div className="relative z-10 p-4 sm:p-8">
+          <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
@@ -2075,7 +2280,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
 
   if (templateId === 'treasure-hunt-birthday') {
     return (
-      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+      <div className="relative bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden">
         <BirthdayThemeElements />
         {/* Enhanced festive overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
@@ -2086,8 +2291,8 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
                            radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
           backgroundSize: '60px 60px'
         }} />
-        <div className="relative z-10 h-full flex items-center justify-center p-8">
-          <div className="max-w-4xl text-center">
+        <div className="relative z-10 p-4 sm:p-8">
+          <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
@@ -2149,14 +2354,29 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
   // Treasure Hunt + Image Templates
   if (templateId === 'treasure-hunt-image-normal') {
     return (
-      <div className="h-full bg-gradient-to-br from-violet-900 via-violet-700 to-purple-700 flex items-center justify-center p-8">
-        <div className="max-w-4xl text-center">
+      <div className="bg-gradient-to-br from-violet-900 via-violet-700 to-purple-700 p-4 sm:p-8">
+        <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.3, type: "spring" }}
+            className="relative mb-8"
           >
-            <FaLock className="text-8xl mx-auto mb-8 text-yellow-300" />
+            <FaLock className="text-8xl mx-auto text-yellow-300 drop-shadow-lg" />
+            <motion.div
+              className="absolute -top-2 -right-2 text-2xl"
+              animate={{
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              🖼️
+            </motion.div>
           </motion.div>
 
           <motion.h1
@@ -2168,39 +2388,116 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             Solve the Clues! 🔐
           </motion.h1>
 
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-xl mb-8 text-white/80"
+          >
+            Follow the trail of clues to unlock your surprise photo!
+          </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="space-y-4 mb-8"
+            className="space-y-6 mb-8"
           >
-            {['First hint...', 'Second hint...', 'Final clue...'].map((clue, idx) => (
-              <div
+            {[
+              { clue: 'First hint...', emoji: '🌟', hint: 'Think about our beginning' },
+              { clue: 'Second hint...', emoji: '💫', hint: 'A place that means everything' },
+              { clue: 'Final clue...', emoji: '✨', hint: 'The moment that changed everything' }
+            ].map((item, idx) => (
+              <motion.div
                 key={idx}
-                className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 + idx * 0.1 }}
+                className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20 shadow-xl hover:bg-white/15 transition-all duration-300"
               >
                 <div className="flex items-start gap-4">
-                  <span className="text-2xl font-bold text-yellow-300">#{idx + 1}</span>
-                  <p className="text-lg text-left flex-1">{clue}</p>
+                  <motion.div
+                    className="flex-shrink-0 w-12 h-12 bg-yellow-300/20 rounded-full flex items-center justify-center border-2 border-yellow-300/30"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      boxShadow: [
+                        '0 0 0 0 rgba(255,255,0,0.3)',
+                        '0 0 0 10px rgba(255,255,0,0)',
+                        '0 0 0 0 rgba(255,255,0,0)'
+                      ]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: idx * 0.5,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <span className="text-2xl font-bold text-yellow-300">#{idx + 1}</span>
+                  </motion.div>
+                  <div className="flex-1 text-left">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-2xl">{item.emoji}</span>
+                      <p className="text-lg text-white font-medium">{item.clue}</p>
+                    </div>
+                    <p className="text-sm text-white/60 italic">{item.hint}</p>
+                  </div>
+                  <motion.div
+                    animate={{
+                      rotate: [0, 5, -5, 0],
+                      scale: [1, 1.05, 1]
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      delay: idx * 0.3,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <FaChevronRight className="text-yellow-300 text-xl" />
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
+            transition={{ delay: 1.2 }}
             className="max-w-md mx-auto"
           >
-            <input
-              type="text"
-              placeholder="Enter password to unlock..."
-              className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 text-center text-lg mb-4"
-              readOnly
-            />
-            <div className="text-sm text-white/60">
-              🖼️ Hidden image + secret message revealed after unlock!
+            <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20 shadow-xl">
+              <motion.input
+                type="text"
+                placeholder="Enter password to unlock..."
+                className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 text-center text-lg mb-4 focus:outline-none focus:border-yellow-300 transition-colors"
+                readOnly
+                animate={{
+                  boxShadow: [
+                    '0 0 0 0 rgba(255,255,255,0.2)',
+                    '0 0 0 8px rgba(255,255,255,0)',
+                    '0 0 0 0 rgba(255,255,255,0)'
+                  ]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.button
+                className="w-full py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold rounded-lg hover:from-yellow-500 hover:to-yellow-700 transition-all duration-300 shadow-lg"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                🔓 Unlock Treasure
+              </motion.button>
+            </div>
+            <div className="text-sm text-white/60 mt-4 flex items-center justify-center gap-2">
+              <FaImage className="text-yellow-300" />
+              <span>Hidden image + secret message revealed!</span>
+              <FaImage className="text-yellow-300" />
             </div>
           </motion.div>
         </div>
@@ -2283,7 +2580,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
 
   if (templateId === 'treasure-hunt-image-birthday') {
     return (
-      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+      <div className="relative bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden">
         <BirthdayThemeElements />
         {/* Enhanced festive overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
@@ -2294,8 +2591,8 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
                            radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
           backgroundSize: '60px 60px'
         }} />
-        <div className="relative z-10 h-full flex items-center justify-center p-8">
-          <div className="max-w-4xl text-center">
+        <div className="relative z-10 p-4 sm:p-8">
+          <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
@@ -2357,14 +2654,29 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
   // Treasure Hunt + Video Templates
   if (templateId === 'treasure-hunt-video-normal') {
     return (
-      <div className="h-full bg-gradient-to-br from-fuchsia-900 via-fuchsia-700 to-purple-700 flex items-center justify-center p-8">
-        <div className="max-w-4xl text-center">
+      <div className="bg-gradient-to-br from-fuchsia-900 via-fuchsia-700 to-purple-700 p-4 sm:p-8">
+        <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.3, type: "spring" }}
+            className="relative mb-8"
           >
-            <FaLock className="text-8xl mx-auto mb-8 text-yellow-300" />
+            <FaLock className="text-8xl mx-auto text-yellow-300 drop-shadow-lg" />
+            <motion.div
+              className="absolute -top-2 -right-2 text-2xl"
+              animate={{
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              🎥
+            </motion.div>
           </motion.div>
 
           <motion.h1
@@ -2376,39 +2688,116 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             Solve the Clues! 🔐
           </motion.h1>
 
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-xl mb-8 text-white/80"
+          >
+            Follow the trail of clues to unlock your surprise video!
+          </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="space-y-4 mb-8"
+            className="space-y-6 mb-8"
           >
-            {['Think back to when...', 'Remember the place...', 'Our special moment...'].map((clue, idx) => (
-              <div
+            {[
+              { clue: 'Think back to when...', emoji: '🌅', hint: 'Our first adventure together' },
+              { clue: 'Remember the place...', emoji: '🏞️', hint: 'Where memories were made' },
+              { clue: 'Our special moment...', emoji: '💑', hint: 'The instant that changed everything' }
+            ].map((item, idx) => (
+              <motion.div
                 key={idx}
-                className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 + idx * 0.1 }}
+                className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20 shadow-xl hover:bg-white/15 transition-all duration-300"
               >
                 <div className="flex items-start gap-4">
-                  <span className="text-2xl font-bold text-yellow-300">#{idx + 1}</span>
-                  <p className="text-lg text-left flex-1">{clue}</p>
+                  <motion.div
+                    className="flex-shrink-0 w-12 h-12 bg-yellow-300/20 rounded-full flex items-center justify-center border-2 border-yellow-300/30"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      boxShadow: [
+                        '0 0 0 0 rgba(255,255,0,0.3)',
+                        '0 0 0 10px rgba(255,255,0,0)',
+                        '0 0 0 0 rgba(255,255,0,0)'
+                      ]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: idx * 0.5,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <span className="text-2xl font-bold text-yellow-300">#{idx + 1}</span>
+                  </motion.div>
+                  <div className="flex-1 text-left">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-2xl">{item.emoji}</span>
+                      <p className="text-lg text-white font-medium">{item.clue}</p>
+                    </div>
+                    <p className="text-sm text-white/60 italic">{item.hint}</p>
+                  </div>
+                  <motion.div
+                    animate={{
+                      rotate: [0, 5, -5, 0],
+                      scale: [1, 1.05, 1]
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      delay: idx * 0.3,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <FaChevronRight className="text-yellow-300 text-xl" />
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
+            transition={{ delay: 1.2 }}
             className="max-w-md mx-auto"
           >
-            <input
-              type="text"
-              placeholder="Enter password to unlock..."
-              className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 text-center text-lg mb-4"
-              readOnly
-            />
-            <div className="text-sm text-white/60">
-              🎥 Hidden video message + secret text revealed after unlock!
+            <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl border-2 border-white/20 shadow-xl">
+              <motion.input
+                type="text"
+                placeholder="Enter password to unlock..."
+                className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 text-center text-lg mb-4 focus:outline-none focus:border-yellow-300 transition-colors"
+                readOnly
+                animate={{
+                  boxShadow: [
+                    '0 0 0 0 rgba(255,255,255,0.2)',
+                    '0 0 0 8px rgba(255,255,255,0)',
+                    '0 0 0 0 rgba(255,255,255,0)'
+                  ]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.button
+                className="w-full py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold rounded-lg hover:from-yellow-500 hover:to-yellow-700 transition-all duration-300 shadow-lg"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                🔓 Unlock Treasure
+              </motion.button>
+            </div>
+            <div className="text-sm text-white/60 mt-4 flex items-center justify-center gap-2">
+              <FaVideo className="text-yellow-300" />
+              <span>Hidden video message + secret text revealed!</span>
+              <FaVideo className="text-yellow-300" />
             </div>
           </motion.div>
         </div>
@@ -2491,7 +2880,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
 
   if (templateId === 'treasure-hunt-video-birthday') {
     return (
-      <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden flex items-center justify-center">
+      <div className="relative bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden">
         <BirthdayThemeElements />
         {/* Enhanced festive overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
@@ -2502,8 +2891,8 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
                            radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
           backgroundSize: '60px 60px'
         }} />
-        <div className="relative z-10 h-full flex items-center justify-center p-8">
-          <div className="max-w-4xl text-center">
+        <div className="relative z-10 p-4 sm:p-8">
+          <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}

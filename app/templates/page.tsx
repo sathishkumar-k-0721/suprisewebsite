@@ -1129,7 +1129,7 @@ export default function TemplatesPage() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-7xl h-[95vh] max-h-[95vh] bg-gradient-to-br from-white via-gray-50 to-purple-50 rounded-3xl shadow-2xl overflow-hidden border-4 border-white/50 flex flex-col mx-2 sm:mx-4"
+              className="relative w-full max-w-7xl h-[85vh] sm:h-[95vh] max-h-[85vh] sm:max-h-[95vh] bg-gradient-to-br from-white via-gray-50 to-purple-50 rounded-3xl shadow-2xl overflow-hidden border-4 border-white/50 flex flex-col mx-2 sm:mx-4"
             >
 
                 {/* Header */}
@@ -1151,11 +1151,11 @@ export default function TemplatesPage() {
                   </div>
                   {/* Theme Switcher and Close Button */}
                   <div className="relative z-10 flex flex-row items-center gap-2 sm:gap-3">
-                    <div className="flex flex-wrap gap-1 sm:gap-2 lg:gap-3 items-center justify-center">
+                    <div className="flex flex-row gap-1 sm:flex-wrap sm:gap-2 lg:gap-3 items-center justify-center">
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`relative px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
+                        className={`relative px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-2 rounded-lg sm:rounded-xl border-2 font-semibold text-xs transition-all duration-300 overflow-hidden ${
                           previewTheme === 'normal'
                             ? 'border-white bg-white/20 text-white shadow-lg'
                             : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
@@ -1167,13 +1167,13 @@ export default function TemplatesPage() {
                       >
                         <span className="relative z-10 flex items-center gap-1">
                           <span>🎨</span>
-                          <span> Normal</span>
+                          <span className="hidden sm:inline"> Normal</span>
                         </span>
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`relative px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
+                        className={`relative px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-2 rounded-lg sm:rounded-xl border-2 font-semibold text-xs transition-all duration-300 overflow-hidden ${
                           previewTheme === 'love'
                             ? 'border-white bg-white/20 text-white shadow-lg'
                             : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
@@ -1185,13 +1185,13 @@ export default function TemplatesPage() {
                       >
                         <span className="relative z-10 flex items-center gap-1">
                           <span>💕</span>
-                          <span> Love</span>
+                          <span className="hidden sm:inline"> Love</span>
                         </span>
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`relative px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl border-2 font-semibold text-xs sm:text-sm transition-all duration-300 overflow-hidden ${
+                        className={`relative px-1 sm:px-2 lg:px-3 py-0.5 sm:py-1 lg:py-2 rounded-lg sm:rounded-xl border-2 font-semibold text-xs transition-all duration-300 overflow-hidden ${
                           previewTheme === 'birthday'
                             ? 'border-white bg-white/20 text-white shadow-lg'
                             : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
@@ -1203,15 +1203,15 @@ export default function TemplatesPage() {
                       >
                         <span className="relative z-10 flex items-center gap-1">
                           <span>🎂</span>
-                          <span> Birthday</span>
+                          <span className="hidden sm:inline"> Birthday</span>
                         </span>
                       </motion.button>
                     </div>
                     <button
                       onClick={() => setPreviewTemplate(null)}
-                      className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all flex-shrink-0"
+                      className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all flex-shrink-0"
                     >
-                      <FaTimes className="text-sm sm:text-lg lg:text-xl text-gray-700" />
+                      <FaTimes className="text-xs sm:text-sm lg:text-base text-gray-700" />
                     </button>
                   </div>
                 </div>

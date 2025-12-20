@@ -33,7 +33,7 @@ model Website {
   isPublished Boolean   @default(false)
   
   // Date validity fields
-  validFrom   DateTime  @default(now())
+  validFrom   DateTime? @default(now())
   validTo     DateTime?
   durationType String   @default("trial") // trial, extended, lifetime
   
