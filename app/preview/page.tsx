@@ -1,33 +1,96 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { FaHeart, FaArrowLeft } from 'react-icons/fa'
 import Link from 'next/link'
-import { FaArrowLeft, FaArrowRight, FaHeart, FaMusic } from 'react-icons/fa'
+
+// Sample data for each template
+const templates = [
+  {
+    id: 1,
+    type: 'text-only',
+    title: 'Happy Birthday, Sarah! 🎉',
+    message: 'Wishing you the most amazing day filled with love, laughter, and wonderful surprises! You deserve all the happiness in the world. May this year bring you endless joy and beautiful memories!',
+    gradient: 'from-purple-900 via-purple-700 to-pink-700'
+  },
+  {
+    id: 2,
+    type: 'text-with-image',
+    title: 'Our Beautiful Memories',
+    message: 'Every moment with you is a treasure. This picture reminds me of all the wonderful times we\'ve shared together. Here\'s to many more amazing memories!',
+    image: 'https://images.unsplash.com/photo-1511988617509-a57c8a288659?w=800',
+    gradient: 'from-blue-900 via-blue-700 to-cyan-700'
+  },
+  {
+    id: 3,
+    type: 'text-with-video',
+    title: 'A Special Message for You',
+    message: 'I created this video montage just for you! Watch all our favorite moments come to life.',
+    gradient: 'from-pink-900 via-pink-700 to-red-700'
+  },
+  {
+    id: 4,
+    type: 'photo-gallery',
+    title: 'Our Journey Together 📸',
+    message: 'A collection of our most cherished moments',
+    images: [
+      'https://images.unsplash.com/photo-1464047736614-af63643285bf?w=400',
+      'https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?w=400',
+      'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400',
+      'https://images.unsplash.com/photo-1501446529957-6226bd447c46?w=400',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400'
+    ],
+    gradient: 'from-green-900 via-green-700 to-teal-700'
+  }
+]
 
 export default function PreviewPage() {
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentIndex, setCurrentIndex] = useState(0)
 
-  const nextPage = () => {
-    if (currentPage < 4) setCurrentPage(currentPage + 1)
-  }
+  // Auto-cycle through templates every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % templates.length)
+    }, 5000) // 5 seconds per template
 
-  const prevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1)
-  }
+    return () => clearInterval(interval)
+  }, [])
+
+  const currentTemplate = templates[currentIndex]
 
   return (
-    <main className="min-h-screen bg-black text-white overflow-hidden">
+    <main className="min-h-screen bg-black text-white overflow-hidden relative">
+      {/* Back button */}
+      <Link 
+        href="/"
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all"
+      >
+        <FaArrowLeft /> Back to Home
+      </Link>
+
+      {/* Progress indicator */}
+      <div className="absolute top-6 right-6 z-50 flex gap-2">
+        {templates.map((_, idx) => (
+          <div
+            key={idx}
+            className={`h-1 w-12 rounded-full transition-all duration-300 ${
+              idx === currentIndex ? 'bg-white' : 'bg-white/30'
+            }`}
+          />
+        ))}
+      </div>
+
       <AnimatePresence mode="wait">
-        {/* Page 1: Text Message */}
-        {currentPage === 1 && (
+        {/* Text Only Template */}
+        {currentTemplate.type === 'text-only' && (
           <motion.div
-            key="page1"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.5 }}
-            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-purple-700 to-pink-700 p-8"
+            key="text-only"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.8 }}
+            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-8`}
           >
             <div className="max-w-3xl text-center">
               <motion.div
@@ -44,192 +107,169 @@ export default function PreviewPage() {
                 transition={{ delay: 0.5 }}
                 className="text-5xl md:text-7xl font-bold mb-8"
               >
-                Happy Birthday, Sarah! 🎉
+                {currentTemplate.title}
               </motion.h1>
               
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="text-2xl md:text-3xl leading-relaxed text-pink-100"
+                className="text-xl md:text-2xl leading-relaxed text-white/90"
               >
-                Today is all about you! Thank you for being such an amazing friend. 
-                Here's to another year of wonderful memories together!
+                {currentTemplate.message}
               </motion.p>
             </div>
           </motion.div>
         )}
 
-        {/* Page 2: Video Message */}
-        {currentPage === 2 && (
+        {/* Text with Image Template */}
+        {currentTemplate.type === 'text-with-image' && (
           <motion.div
-            key="page2"
+            key="text-with-image"
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.5 }}
-            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-900 via-pink-700 to-red-700 p-8"
+            transition={{ duration: 0.8 }}
+            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-8`}
           >
-            <div className="max-w-4xl w-full">
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+            <div className="max-w-6xl grid md:grid-cols-2 gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-4xl md:text-5xl font-bold mb-8 text-center"
+                className="relative"
               >
-                A Special Message for You
-              </motion.h2>
+                <img
+                  src={currentTemplate.image}
+                  alt="Memory"
+                  className="rounded-2xl shadow-2xl w-full h-[500px] object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-2xl" />
+              </motion.div>
               
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
-                className="aspect-video bg-black/50 rounded-2xl flex items-center justify-center backdrop-blur-sm border-2 border-pink-300"
               >
-                <p className="text-2xl text-pink-200">
-                  [Your video will be displayed here]
+                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                  {currentTemplate.title}
+                </h1>
+                <p className="text-xl md:text-2xl leading-relaxed text-white/90">
+                  {currentTemplate.message}
                 </p>
               </motion.div>
             </div>
           </motion.div>
         )}
 
-        {/* Page 3: Photo with Text */}
-        {currentPage === 3 && (
+        {/* Text with Video Template */}
+        {currentTemplate.type === 'text-with-video' && (
           <motion.div
-            key="page3"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.5 }}
-            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-900 via-red-700 to-orange-700 p-8"
+            key="text-with-video"
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -100 }}
+            transition={{ duration: 0.8 }}
+            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-8`}
           >
-            <div className="max-w-4xl w-full">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
+            <div className="max-w-5xl text-center">
+              <motion.h1
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="aspect-[4/3] bg-black/50 rounded-2xl mb-8 flex items-center justify-center backdrop-blur-sm border-2 border-red-300"
+                className="text-4xl md:text-6xl font-bold mb-6"
               >
-                <p className="text-2xl text-red-200">
-                  [Your photo will be displayed here]
-                </p>
-              </motion.div>
+                {currentTemplate.title}
+              </motion.h1>
               
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="text-2xl md:text-3xl text-center leading-relaxed text-red-100"
-              >
-                Remembering all the amazing times we've shared. You're truly one of a kind!
-              </motion.p>
-
-              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.7 }}
-                className="mt-6 flex items-center justify-center gap-2 text-red-200"
+                transition={{ delay: 0.5 }}
+                className="text-xl md:text-2xl mb-8 text-white/90"
               >
-                <FaMusic className="text-2xl" />
-                <span>[Background music playing]</span>
+                {currentTemplate.message}
+              </motion.p>
+              
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.7 }}
+                className="bg-black/30 backdrop-blur-sm rounded-2xl p-12 aspect-video flex items-center justify-center"
+              >
+                <div className="text-center">
+                  <div className="text-6xl mb-4">🎬</div>
+                  <p className="text-white/60">Video Player Preview</p>
+                </div>
               </motion.div>
             </div>
           </motion.div>
         )}
 
-        {/* Page 4: Photo Gallery */}
-        {currentPage === 4 && (
+        {/* Photo Gallery Template */}
+        {currentTemplate.type === 'photo-gallery' && (
           <motion.div
-            key="page4"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.5 }}
-            className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-900 via-orange-700 to-yellow-700 p-8"
+            key="photo-gallery"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-8`}
           >
-            <div className="max-w-6xl w-full">
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
+            <div className="max-w-6xl text-center">
+              <motion.h1
+                initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-4xl md:text-5xl font-bold mb-8 text-center"
+                className="text-4xl md:text-6xl font-bold mb-4"
               >
-                Our Memories Together
-              </motion.h2>
+                {currentTemplate.title}
+              </motion.h1>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3 + i * 0.1 }}
-                    className="aspect-square bg-black/50 rounded-xl flex items-center justify-center backdrop-blur-sm border-2 border-orange-300"
-                  >
-                    <span className="text-lg text-orange-200">Photo {i}</span>
-                  </motion.div>
-                ))}
-              </div>
-
               <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-xl md:text-2xl mb-12 text-white/90"
+              >
+                {currentTemplate.message}
+              </motion.p>
+              
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                className="text-2xl text-center text-orange-100"
+                transition={{ delay: 0.7 }}
+                className="grid grid-cols-2 md:grid-cols-3 gap-4"
               >
-                Cheers to many more adventures! 🎊
-              </motion.p>
+                {currentTemplate.images?.map((img, idx) => (
+                  <motion.img
+                    key={idx}
+                    src={img}
+                    alt={`Gallery ${idx + 1}`}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.8 + idx * 0.1 }}
+                    className="rounded-xl shadow-xl w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                ))}
+              </motion.div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Navigation */}
-      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-4 bg-white/10 backdrop-blur-md rounded-full px-8 py-4">
-        <button
-          onClick={prevPage}
-          disabled={currentPage === 1}
-          className="p-3 rounded-full bg-white/20 hover:bg-white/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <FaArrowLeft />
-        </button>
-        
-        <div className="flex gap-2">
-          {[1, 2, 3, 4].map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                currentPage === page ? 'bg-white w-8' : 'bg-white/50'
-              }`}
-            />
-          ))}
+      {/* Template type indicator */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-full">
+          <p className="text-sm font-semibold">
+            {currentTemplate.type === 'text-only' && '✍️ Text Only'}
+            {currentTemplate.type === 'text-with-image' && '🖼️ Text with Image'}
+            {currentTemplate.type === 'text-with-video' && '🎬 Text with Video'}
+            {currentTemplate.type === 'photo-gallery' && '📸 Photo Gallery'}
+          </p>
         </div>
-        
-        <button
-          onClick={nextPage}
-          disabled={currentPage === 4}
-          className="p-3 rounded-full bg-white/20 hover:bg-white/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <FaArrowRight />
-        </button>
       </div>
-
-      {/* Back to Home */}
-      <Link href="/">
-        <button className="fixed top-8 left-8 px-6 py-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors flex items-center gap-2">
-          <FaArrowLeft />
-          Back to Home
-        </button>
-      </Link>
-
-      {/* Create Your Own */}
-      <Link href="/pricing">
-        <button className="fixed top-8 right-8 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full hover:shadow-2xl transition-all font-semibold">
-          Create Your Own
-        </button>
-      </Link>
     </main>
   )
 }

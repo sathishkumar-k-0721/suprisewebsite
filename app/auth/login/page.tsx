@@ -1,20 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { FaEnvelope, FaLock, FaArrowLeft } from 'react-icons/fa'
-import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { signIn, useSession } from 'next-auth/react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { data: session, status } = useSession()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const callbackUrl = searchParams.get('callbackUrl') || '/templates'
+      router.push(callbackUrl)
+    }
+  }, [status, router, searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,13 +41,29 @@ export default function LoginPage() {
       if (result?.error) {
         setError('Invalid email or password')
       } else {
-        router.push('/dashboard')
+        // Redirect to callback URL or templates page
+        const callbackUrl = searchParams.get('callbackUrl') || '/templates'
+        router.push(callbackUrl)
       }
     } catch (err: any) {
       setError('An error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show loading while checking session
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-red-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-600"></div>
+      </div>
+    )
+  }
+
+  // Don't show login form if already authenticated
+  if (status === 'authenticated') {
+    return null
   }
 
   return (
@@ -151,5 +177,17 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-700 to-pink-700 flex items-center justify-center p-4">
+        <div className="text-white text-xl">Loading...</div>
+      </main>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }

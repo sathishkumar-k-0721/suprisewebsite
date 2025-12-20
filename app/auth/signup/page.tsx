@@ -50,8 +50,8 @@ export default function SignupPage() {
         throw new Error(data.error || 'Failed to create account')
       }
 
-      // Redirect to payment page
-      router.push('/payment')
+      // Redirect to templates page to choose templates
+      router.push('/templates')
     } catch (err: any) {
       setError(err.message)
     } finally {
