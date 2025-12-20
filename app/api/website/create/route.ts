@@ -3,10 +3,11 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { nanoid } from 'nanoid'
+import { Prisma } from '@prisma/client'
 
 interface PageData {
   templateId: string
-  content: Record<string, unknown>
+  content: Prisma.InputJsonValue
 }
 
 export async function POST(req: NextRequest) {
