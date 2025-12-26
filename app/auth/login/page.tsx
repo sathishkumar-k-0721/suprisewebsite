@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -45,7 +45,7 @@ function LoginForm() {
         const callbackUrl = searchParams.get('callbackUrl') || '/templates'
         router.push(callbackUrl)
       }
-    } catch (err: any) {
+    } catch {
       setError('An error occurred. Please try again.')
     } finally {
       setLoading(false)

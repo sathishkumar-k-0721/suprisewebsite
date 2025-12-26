@@ -171,27 +171,6 @@ function LoveThemeHearts() {
   );
 }
 
-// Love Theme Wrapper
-function LoveThemeWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden">
-      <LoveThemeHearts />
-      {/* Romantic overlay with multiple gradients */}
-      <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
-      <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 opacity-5" style={{
-        backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,20,147,0.3) 2px, transparent 2px),
-                         radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
-        backgroundSize: '50px 50px'
-      }} />
-      <div className="relative z-10">
-        {children}
-      </div>
-    </div>
-  );
-}
-
 // Birthday Theme Animated Elements
 function BirthdayThemeElements() {
   return (
@@ -343,46 +322,25 @@ function BirthdayThemeElements() {
   );
 }
 
-// Birthday Theme Wrapper
-function BirthdayThemeWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden">
-      <BirthdayThemeElements />
-      {/* Enhanced festive overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
-      <div className="absolute inset-0 bg-gradient-to-r from-pink-400/15 via-transparent to-orange-400/15" />
-      {/* Party pattern overlay */}
-      <div className="absolute inset-0 opacity-10" style={{
-        backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,165,0,0.4) 3px, transparent 3px),
-                         radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
-        backgroundSize: '60px 60px'
-      }} />
-      <div className="relative z-10">
-        {children}
-      </div>
-    </div>
-  );
-}
-
 export default function TemplatePreview({ templateId, fullScreen = false }: TemplatePreviewProps) {
   // Text Only Templates
   if (templateId === 'text-only-normal') {
     return (
-      <div className="h-full bg-gradient-to-br from-purple-900 via-purple-700 to-pink-700 flex items-center justify-center p-8">
-        <div className="max-w-3xl text-center">
+      <div className="h-full bg-gradient-to-br from-purple-900 via-purple-700 to-pink-700 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="max-w-4xl w-full text-center px-4">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.3, type: "spring" }}
           >
-            <FaHeart className="text-8xl mx-auto mb-8 text-pink-300" />
+            <FaHeart className="text-5xl sm:text-6xl lg:text-8xl mx-auto mb-6 sm:mb-8 text-pink-300" />
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="text-5xl md:text-7xl font-bold mb-8 text-white"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 text-white leading-tight"
           >
             Happy Birthday, Sarah! 🎉
           </motion.h1>
@@ -391,7 +349,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="text-xl md:text-2xl leading-relaxed text-white/90"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere"
           >
             Wishing you the most amazing day filled with love, laughter, and wonderful surprises!
             You deserve all the happiness in the world. May this year bring you endless joy and beautiful memories!
@@ -408,7 +366,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
         {/* Romantic overlay with multiple gradients */}
         <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
         <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
-        <div className="relative z-10 max-w-3xl text-center p-8">
+        <div className="relative z-10 max-w-4xl w-full text-center p-4 sm:p-6 lg:p-8 px-4">
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
             animate={{
@@ -421,7 +379,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
               stiffness: 200,
               damping: 10
             }}
-            className="mb-8"
+            className="mb-6 sm:mb-8"
           >
             <motion.div
               animate={{
@@ -434,7 +392,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
                 ease: "easeInOut"
               }}
             >
-              <FaHeart className="text-8xl mx-auto text-red-500 drop-shadow-2xl filter brightness-110" />
+              <FaHeart className="text-5xl sm:text-6xl lg:text-8xl mx-auto text-red-500 drop-shadow-2xl filter brightness-110" />
             </motion.div>
           </motion.div>
 
@@ -450,7 +408,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
               type: "spring",
               stiffness: 100
             }}
-            className="text-5xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-red-600 via-pink-600 to-red-800 bg-clip-text text-transparent drop-shadow-lg"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-red-600 via-pink-600 to-red-800 bg-clip-text text-transparent drop-shadow-lg leading-tight"
           >
             <motion.span
               animate={{
@@ -471,7 +429,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.8 }}
-            className="text-xl md:text-2xl leading-relaxed text-red-800 font-medium"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed text-red-800 font-medium whitespace-pre-line break-words overflow-wrap-anywhere"
           >
             <motion.span
               animate={{
@@ -676,18 +634,18 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
   // Text with Image Templates
   if (templateId === 'text-with-image-normal') {
     return (
-      <div className="h-full bg-gradient-to-br from-blue-900 via-blue-700 to-cyan-700 flex items-center justify-center p-8">
-        <div className="max-w-6xl grid md:grid-cols-2 gap-12 items-center">
+      <div className="h-full bg-gradient-to-br from-blue-900 via-blue-700 to-cyan-700 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center px-4">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="relative"
+            className="relative order-2 lg:order-1"
           >
             <img
               src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?w=800"
               alt="Memory"
-              className="rounded-2xl shadow-2xl w-full h-[500px] object-cover"
+              className="rounded-2xl shadow-2xl w-full h-64 sm:h-80 md:h-96 lg:h-[500px] object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-2xl" />
           </motion.div>
@@ -696,11 +654,12 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
+            className="text-center lg:text-left order-1 lg:order-2"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-white leading-tight">
               Our Beautiful Memories
             </h1>
-            <p className="text-xl md:text-2xl leading-relaxed text-white/90">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere">
               Every moment with you is a treasure. This picture reminds me of all the wonderful times we&apos;ve shared together. Here&apos;s to many more amazing memories!
             </p>
           </motion.div>
@@ -989,13 +948,13 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
   // Text with Video Templates
   if (templateId === 'text-with-video-normal') {
     return (
-      <div className="bg-gradient-to-br from-pink-900 via-pink-700 to-red-700 p-4 sm:p-8">
-        <div className="max-w-5xl mx-auto">
+      <div className="bg-gradient-to-br from-pink-900 via-pink-700 to-red-700 p-4 sm:p-6 lg:p-8">
+        <div className="max-w-5xl w-full mx-auto px-4">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-4xl md:text-6xl font-bold mb-6 text-white text-center"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-white text-center leading-tight"
           >
             A Special Message for You
           </motion.h1>
@@ -1004,7 +963,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-xl md:text-2xl mb-8 text-white/90 text-center"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-white/90 text-center whitespace-pre-line break-words overflow-wrap-anywhere"
           >
             I created this video montage just for you! Watch all our favorite moments come to life.
           </motion.p>
@@ -1013,7 +972,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.7 }}
-            className="relative bg-black/30 backdrop-blur-sm rounded-2xl p-8 aspect-video flex items-center justify-center border-2 border-white/20 shadow-2xl mx-auto max-w-4xl"
+            className="relative bg-black/30 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-12 aspect-video flex items-center justify-center border-2 border-white/20 shadow-2xl mx-auto max-w-4xl"
           >
             {/* Video player mockup */}
             <div className="relative w-full h-full rounded-xl overflow-hidden bg-gradient-to-br from-gray-800 to-black flex items-center justify-center">
@@ -1825,13 +1784,13 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
     ];
 
     return (
-      <div className="bg-gradient-to-br from-green-900 via-green-700 to-teal-700 p-4 sm:p-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="bg-gradient-to-br from-green-900 via-green-700 to-teal-700 p-4 sm:p-6 lg:p-8">
+        <div className="max-w-6xl w-full mx-auto px-4">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-4xl md:text-6xl font-bold mb-4 text-white text-center"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 text-white text-center leading-tight"
           >
             Our Journey Together 📸
           </motion.h1>
@@ -1840,7 +1799,7 @@ export default function TemplatePreview({ templateId, fullScreen = false }: Temp
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-xl md:text-2xl mb-12 text-white/90 text-center"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-12 text-white/90 text-center whitespace-pre-line break-words overflow-wrap-anywhere"
           >
             A collection of our most cherished moments
           </motion.p>

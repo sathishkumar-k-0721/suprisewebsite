@@ -290,11 +290,11 @@ export default function WebsitePage() {
       {website.theme === 'love' && <LoveThemeHearts />}
 
       {/* Progress indicator */}
-      <div className="absolute top-6 right-6 z-50 flex gap-2">
+      <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-50 flex gap-1 sm:gap-2">
         {website.pages.map((_, idx) => (
           <div
             key={idx}
-            className={`h-1 w-12 rounded-full transition-all duration-300 ${
+            className={`h-1 w-8 sm:w-12 rounded-full transition-all duration-300 ${
               idx === currentPageIndex ? 'bg-white' : 'bg-white/30'
             }`}
           />
@@ -307,19 +307,19 @@ export default function WebsitePage() {
           <button
             onClick={goToPrevPage}
             disabled={currentPageIndex === 0}
-            className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50 p-4 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            className="fixed left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-50 p-3 sm:p-4 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             aria-label="Previous page"
           >
-            <FaChevronLeft className="text-2xl" />
+            <FaChevronLeft className="text-xl sm:text-2xl" />
           </button>
           
           <button
             onClick={goToNextPage}
             disabled={currentPageIndex === website.pages.length - 1}
-            className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 p-4 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            className="fixed right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-50 p-3 sm:p-4 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             aria-label="Next page"
           >
-            <FaChevronRight className="text-2xl" />
+            <FaChevronRight className="text-xl sm:text-2xl" />
           </button>
         </>
       )}
@@ -333,24 +333,24 @@ export default function WebsitePage() {
           transition={{ duration: 0.8 }}
           className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${
             gradients[currentPage.templateId] || 'from-purple-900 to-pink-900'
-          } p-8`}
+          } p-4 sm:p-6 lg:p-8`}
         >
           {/* Text Only Template */}
           {currentPage.templateId === 'text-only' && (
-            <div className="max-w-3xl text-center">
+            <div className="max-w-4xl w-full text-center px-4">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: "spring" }}
               >
-                <FaHeart className="text-8xl mx-auto mb-8 text-pink-300" />
+                <FaHeart className="text-6xl sm:text-7xl lg:text-8xl mx-auto mb-6 sm:mb-8 text-pink-300" />
               </motion.div>
               
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="text-xl md:text-2xl leading-relaxed text-white/90 whitespace-pre-wrap"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere"
               >
                 {currentPage.content.text}
               </motion.div>
@@ -359,23 +359,23 @@ export default function WebsitePage() {
 
           {/* Text with Image Template */}
           {currentPage.templateId === 'text-with-image' && (
-            <div className="max-w-6xl grid md:grid-cols-2 gap-12 items-center">
+            <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center px-4">
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="relative"
+                className="relative order-2 lg:order-1"
               >
                 {currentPage.content.image ? (
                   <img
                     src={currentPage.content.image}
                     alt="Surprise"
-                    className="rounded-2xl shadow-2xl w-full h-[500px] object-cover"
+                    className="rounded-2xl shadow-2xl w-full h-64 sm:h-80 md:h-96 lg:h-[500px] object-cover"
                   />
                 ) : (
-                  <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-2xl w-full h-[500px] flex items-center justify-center">
+                  <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-2xl w-full h-64 sm:h-80 md:h-96 lg:h-[500px] flex items-center justify-center">
                     <div className="text-center text-white">
-                      <div className="text-8xl mb-4">📷</div>
+                      <div className="text-6xl sm:text-7xl lg:text-8xl mb-4">📷</div>
                       <p className="text-sm opacity-75">{currentPage.content.imageName || 'Image'}</p>
                     </div>
                   </div>
@@ -386,8 +386,9 @@ export default function WebsitePage() {
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
+                className="text-center lg:text-left order-1 lg:order-2"
               >
-                <p className="text-xl md:text-2xl leading-relaxed text-white/90 whitespace-pre-wrap">
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere">
                   {currentPage.content.text}
                 </p>
               </motion.div>
@@ -396,12 +397,12 @@ export default function WebsitePage() {
 
           {/* Text with Video Template */}
           {currentPage.templateId === 'text-with-video' && (
-            <div className="max-w-5xl text-center">
+            <div className="max-w-5xl w-full text-center px-4">
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-xl md:text-2xl mb-8 text-white/90 whitespace-pre-wrap"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere"
               >
                 {currentPage.content.text}
               </motion.p>
@@ -415,12 +416,12 @@ export default function WebsitePage() {
                   <video
                     src={currentPage.content.video}
                     controls
-                    className="w-full rounded-2xl shadow-2xl"
+                    className="w-full max-w-4xl rounded-2xl shadow-2xl"
                   />
                 ) : (
-                  <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-12 aspect-video flex items-center justify-center">
+                  <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-8 sm:p-12 aspect-video flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-6xl mb-4">🎬</div>
+                      <div className="text-5xl sm:text-6xl mb-4">🎬</div>
                       <p className="text-white/60">{currentPage.content.videoName || 'Video'}</p>
                     </div>
                   </div>
@@ -431,20 +432,20 @@ export default function WebsitePage() {
 
           {/* Text with Audio Template */}
           {currentPage.templateId === 'text-with-audio' && (
-            <div className="max-w-4xl text-center">
+            <div className="max-w-4xl w-full text-center px-4">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: "spring" }}
               >
-                <div className="text-8xl mb-8">🎵</div>
+                <div className="text-6xl sm:text-7xl lg:text-8xl mb-6 sm:mb-8">🎵</div>
               </motion.div>
               
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="text-xl md:text-2xl mb-8 text-white/90 whitespace-pre-wrap"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere"
               >
                 {currentPage.content.text}
               </motion.p>
@@ -453,7 +454,7 @@ export default function WebsitePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border-2 border-white/20"
+                className="bg-white/10 backdrop-blur-md p-6 sm:p-8 rounded-2xl border-2 border-white/20 max-w-md mx-auto"
               >
                 {currentPage.content.audio ? (
                   <audio
@@ -473,12 +474,12 @@ export default function WebsitePage() {
 
           {/* Photo Gallery Template */}
           {currentPage.templateId === 'photo-gallery' && (
-            <div className="max-w-6xl text-center">
+            <div className="max-w-6xl w-full text-center px-4">
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-xl md:text-2xl mb-12 text-white/90 whitespace-pre-wrap"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-12 text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere"
               >
                 {currentPage.content.text}
               </motion.p>
@@ -487,7 +488,7 @@ export default function WebsitePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="grid grid-cols-2 md:grid-cols-3 gap-4"
+                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
               >
                 {currentPage.content.gallery && currentPage.content.gallery.length > 0 ? (
                   currentPage.content.gallery.map((img, idx) => (
@@ -498,7 +499,7 @@ export default function WebsitePage() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.6 + idx * 0.1 }}
-                      className="rounded-xl shadow-xl w-full h-48 object-cover"
+                      className="rounded-xl shadow-xl w-full h-32 sm:h-40 md:h-48 object-cover"
                     />
                   ))
                 ) : (
@@ -508,9 +509,9 @@ export default function WebsitePage() {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.6 + idx * 0.1 }}
-                      className="rounded-xl shadow-xl w-full h-48 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
+                      className="rounded-xl shadow-xl w-full h-32 sm:h-40 md:h-48 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
                     >
-                      <div className="text-white text-4xl">📷</div>
+                      <div className="text-white text-2xl sm:text-3xl lg:text-4xl">📷</div>
                     </motion.div>
                   ))
                 )}
@@ -538,8 +539,8 @@ export default function WebsitePage() {
                     transition={{ delay: 0.3 }}
                     className="mb-6"
                   >
-                    <h2 className="text-4xl font-bold mb-2">Solve the Clues to Unlock! 🔐</h2>
-                    <p className="text-xl text-yellow-200">You have only 3 clues to unlock</p>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">Solve the Clues to Unlock! 🔐</h2>
+                    <p className="text-base sm:text-lg md:text-xl text-yellow-200">You have only 3 clues to unlock</p>
                   </motion.div>
 
                   {/* Show current clue with cycling animation */}
@@ -552,10 +553,10 @@ export default function WebsitePage() {
                       transition={{ duration: 0.5 }}
                       className="mb-8"
                     >
-                      <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl border-2 border-yellow-300/50 shadow-2xl">
-                        <div className="flex items-start gap-4">
-                          <span className="text-3xl font-bold text-yellow-300">#{currentClueIndex + 1}</span>
-                          <p className="text-2xl text-left flex-1">
+                      <div className="bg-white/10 backdrop-blur-md p-6 sm:p-8 rounded-xl border-2 border-yellow-300/50 shadow-2xl">
+                        <div className="flex items-start gap-3 sm:gap-4">
+                          <span className="text-2xl sm:text-3xl font-bold text-yellow-300">#{currentClueIndex + 1}</span>
+                          <p className="text-lg sm:text-xl md:text-2xl text-left flex-1 whitespace-pre-line break-words overflow-wrap-anywhere">
                             {currentClueIndex === 0 && currentPage.content.clue1}
                             {currentClueIndex === 1 && currentPage.content.clue2}
                             {currentClueIndex === 2 && currentPage.content.clue3}
@@ -590,12 +591,12 @@ export default function WebsitePage() {
                       onChange={(e) => setPasswordInput(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
                       placeholder="Enter the password..."
-                      className="w-full p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 focus:outline-none focus:border-yellow-300 text-center text-lg mb-4"
+                      className="w-full p-3 sm:p-4 rounded-lg bg-white/20 border-2 border-white/30 text-white placeholder-white/50 focus:outline-none focus:border-yellow-300 text-center text-base sm:text-lg mb-4"
                     />
                     
                     <button
                       onClick={handlePasswordSubmit}
-                      className="w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-lg"
+                      className="w-full py-3 sm:py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 sm:gap-3 text-base sm:text-lg"
                     >
                       <FaUnlock /> Unlock
                     </button>
@@ -628,7 +629,7 @@ export default function WebsitePage() {
                     transition={{ delay: 0.2 }}
                     className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border-2 border-white/20 mb-6"
                   >
-                    <p className="text-xl md:text-2xl leading-relaxed whitespace-pre-wrap">
+                    <p className="text-lg sm:text-xl md:text-2xl leading-relaxed whitespace-pre-line break-words overflow-wrap-anywhere">
                       {currentPage.content.text}
                     </p>
                   </motion.div>
@@ -694,9 +695,9 @@ export default function WebsitePage() {
       </AnimatePresence>
 
       {/* Page indicator */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-full">
-          <p className="text-sm font-semibold">
+      <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-white/10 backdrop-blur-md px-4 sm:px-6 py-2 sm:py-3 rounded-full">
+          <p className="text-xs sm:text-sm font-semibold">
             Page {currentPageIndex + 1} of {website.pages.length}
           </p>
         </div>

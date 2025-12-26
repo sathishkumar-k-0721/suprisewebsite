@@ -143,17 +143,17 @@ export default function PageBuilder({ onComplete, onCancel }: PageBuilderProps) 
     }
 
     if (currentTemplate.contentTypes.includes('clues') && (!currentClue1.trim() || !currentClue2.trim() || !currentClue3.trim())) {
-      alert('Please enter all 3 clues!')
+      alert('Please enter all 3 clues for the treasure hunt!')
       return
     }
 
     if (currentTemplate.contentTypes.includes('password') && !currentPassword.trim()) {
-      alert('Please set a password!')
+      alert('Please set a password for the treasure hunt!')
       return
     }
 
     if (currentTemplate.contentTypes.includes('audio') && !currentAudio) {
-      alert('Please upload an audio file!')
+      alert('Please upload an audio file for the treasure hunt!')
       return
     }
 

@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
     // Validate each page has required fields
     for (const page of pages) {
       if (!page.templateId || !page.content) {
+        console.error('Invalid page data:', page)
         return NextResponse.json({ error: 'Each page must have templateId and content' }, { status: 400 })
       }
     }

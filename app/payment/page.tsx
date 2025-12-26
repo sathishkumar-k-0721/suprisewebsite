@@ -61,7 +61,6 @@ export default function PaymentPage() {
         name: 'Surprise Website Builder',
         description: 'Website Creation Payment',
         handler: async function (response: any) {
-          console.log('Payment Success:', response)
           
           // Save payment info (frontend only - for testing)
           const paymentInfo = {
@@ -98,7 +97,6 @@ export default function PaymentPage() {
         modal: {
           ondismiss: function() {
             setLoading(false)
-            console.log('Payment cancelled by user')
           }
         },
       }
