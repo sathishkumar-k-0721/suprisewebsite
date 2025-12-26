@@ -2,117 +2,26 @@
   "functions": {
     "app/**/*.js": {
       "maxDuration": 10,
-      "runtime": "nodejs18.x",
-      "includeFiles": [
-        "app/**/*.js",
-        "app/**/*.ts",
-        "lib/**/*.js",
-        "lib/**/*.ts",
-        "components/**/*.js",
-        "components/**/*.ts",
-        "types/**/*.d.ts",
-        "prisma/schema.prisma",
-        "package.json"
-      ],
-      "excludeFiles": [
-        "node_modules/@prisma/engines/**",
-        "node_modules/@prisma/client/**",
-        "node_modules/sharp/**",
-        "node_modules/cloudinary/**",
-        "node_modules/bcryptjs/**",
-        "node_modules/framer-motion/**",
-        "node_modules/react-icons/**",
-        "node_modules/next-auth/**",
-        "node_modules/razorpay/**",
-        "node_modules/react-dropzone/**"
-      ]
+      "runtime": "nodejs18.x"
     },
     "app/**/*.ts": {
       "maxDuration": 10,
-      "runtime": "nodejs18.x",
-      "includeFiles": [
-        "app/**/*.js",
-        "app/**/*.ts",
-        "lib/**/*.js",
-        "lib/**/*.ts",
-        "components/**/*.js",
-        "components/**/*.ts",
-        "types/**/*.d.ts",
-        "prisma/schema.prisma",
-        "package.json"
-      ],
-      "excludeFiles": [
-        "node_modules/@prisma/engines/**",
-        "node_modules/@prisma/client/**",
-        "node_modules/sharp/**",
-        "node_modules/cloudinary/**",
-        "node_modules/bcryptjs/**",
-        "node_modules/framer-motion/**",
-        "node_modules/react-icons/**",
-        "node_modules/next-auth/**",
-        "node_modules/razorpay/**",
-        "node_modules/react-dropzone/**"
-      ]
+      "runtime": "nodejs18.x"
     },
     "pages/**/*.js": {
       "maxDuration": 10,
-      "runtime": "nodejs18.x",
-      "includeFiles": [
-        "pages/**/*.js",
-        "pages/**/*.ts",
-        "lib/**/*.js",
-        "lib/**/*.ts",
-        "components/**/*.js",
-        "components/**/*.ts",
-        "types/**/*.d.ts",
-        "prisma/schema.prisma",
-        "package.json"
-      ],
-      "excludeFiles": [
-        "node_modules/@prisma/engines/**",
-        "node_modules/@prisma/client/**",
-        "node_modules/sharp/**",
-        "node_modules/cloudinary/**",
-        "node_modules/bcryptjs/**",
-        "node_modules/framer-motion/**",
-        "node_modules/react-icons/**",
-        "node_modules/next-auth/**",
-        "node_modules/razorpay/**",
-        "node_modules/react-dropzone/**"
-      ]
+      "runtime": "nodejs18.x"
     },
     "pages/**/*.ts": {
       "maxDuration": 10,
-      "runtime": "nodejs18.x",
-      "includeFiles": [
-        "pages/**/*.js",
-        "pages/**/*.ts",
-        "lib/**/*.js",
-        "lib/**/*.ts",
-        "components/**/*.js",
-        "components/**/*.ts",
-        "types/**/*.d.ts",
-        "prisma/schema.prisma",
-        "package.json"
-      ],
-      "excludeFiles": [
-        "node_modules/@prisma/engines/**",
-        "node_modules/@prisma/client/**",
-        "node_modules/sharp/**",
-        "node_modules/cloudinary/**",
-        "node_modules/bcryptjs/**",
-        "node_modules/framer-motion/**",
-        "node_modules/react-icons/**",
-        "node_modules/next-auth/**",
-        "node_modules/razorpay/**",
-        "node_modules/react-dropzone/**"
-      ]
+      "runtime": "nodejs18.x"
     }
   },
   "regions": ["fra1"],
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
+  "excludeFiles": "node_modules/@prisma/engines/**,node_modules/@prisma/client/**,node_modules/sharp/**,node_modules/cloudinary/**,node_modules/bcryptjs/**,node_modules/framer-motion/**,node_modules/react-icons/**,node_modules/next-auth/**,node_modules/razorpay/**,node_modules/react-dropzone/**",
   "rewrites": [
     {
       "source": "/api/(.*)",
