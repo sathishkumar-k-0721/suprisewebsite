@@ -62,19 +62,19 @@ export default function PreviewPage() {
   return (
     <main className="min-h-screen bg-black text-white overflow-hidden relative">
       {/* Back button */}
-      <Link 
+      <Link
         href="/"
-        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all"
+        className="absolute top-4 sm:top-6 left-4 sm:left-6 z-50 flex items-center gap-2 px-3 sm:px-4 py-2 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-all text-sm sm:text-base"
       >
-        <FaArrowLeft /> Back to Home
+        <FaArrowLeft className="text-sm sm:text-base" /> Back to Home
       </Link>
 
       {/* Progress indicator */}
-      <div className="absolute top-6 right-6 z-50 flex gap-2">
+      <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-50 flex gap-1 sm:gap-2">
         {templates.map((_, idx) => (
           <div
             key={idx}
-            className={`h-1 w-12 rounded-full transition-all duration-300 ${
+            className={`h-1 w-8 sm:w-12 rounded-full transition-all duration-300 ${
               idx === currentIndex ? 'bg-white' : 'bg-white/30'
             }`}
           />
@@ -90,31 +90,31 @@ export default function PreviewPage() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.8 }}
-            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-8`}
+            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-4 sm:p-6 lg:p-8`}
           >
-            <div className="max-w-3xl text-center">
+            <div className="max-w-4xl w-full text-center px-4">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: "spring" }}
               >
-                <FaHeart className="text-8xl mx-auto mb-8 text-pink-300" />
+                <FaHeart className="text-5xl sm:text-6xl lg:text-8xl mx-auto mb-6 sm:mb-8 text-pink-300" />
               </motion.div>
-              
+
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="text-5xl md:text-7xl font-bold mb-8"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 leading-tight"
               >
                 {currentTemplate.title}
               </motion.h1>
-              
+
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="text-xl md:text-2xl leading-relaxed text-white/90"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere"
               >
                 {currentTemplate.message}
               </motion.p>
@@ -130,32 +130,33 @@ export default function PreviewPage() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.8 }}
-            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-8`}
+            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-4 sm:p-6 lg:p-8`}
           >
-            <div className="max-w-6xl grid md:grid-cols-2 gap-12 items-center">
+            <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center px-4">
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="relative"
+                className="relative order-2 lg:order-1"
               >
                 <img
                   src={currentTemplate.image}
                   alt="Memory"
-                  className="rounded-2xl shadow-2xl w-full h-[500px] object-cover"
+                  className="rounded-2xl shadow-2xl w-full h-64 sm:h-80 md:h-96 lg:h-[500px] object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-2xl" />
               </motion.div>
-              
+
               <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
+                className="text-center lg:text-left order-1 lg:order-2"
               >
-                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
                   {currentTemplate.title}
                 </h1>
-                <p className="text-xl md:text-2xl leading-relaxed text-white/90">
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere">
                   {currentTemplate.message}
                 </p>
               </motion.div>
@@ -171,36 +172,36 @@ export default function PreviewPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -100 }}
             transition={{ duration: 0.8 }}
-            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-8`}
+            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-4 sm:p-6 lg:p-8`}
           >
-            <div className="max-w-5xl text-center">
+            <div className="max-w-5xl w-full text-center px-4">
               <motion.h1
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-4xl md:text-6xl font-bold mb-6"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight"
               >
                 {currentTemplate.title}
               </motion.h1>
-              
+
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="text-xl md:text-2xl mb-8 text-white/90"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere"
               >
                 {currentTemplate.message}
               </motion.p>
-              
+
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.7 }}
-                className="bg-black/30 backdrop-blur-sm rounded-2xl p-12 aspect-video flex items-center justify-center"
+                className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-12 aspect-video flex items-center justify-center max-w-4xl mx-auto"
               >
                 <div className="text-center">
-                  <div className="text-6xl mb-4">🎬</div>
-                  <p className="text-white/60">Video Player Preview</p>
+                  <div className="text-4xl sm:text-5xl lg:text-6xl mb-4">🎬</div>
+                  <p className="text-sm sm:text-base text-white/60">Video Player Preview</p>
                 </div>
               </motion.div>
             </div>
@@ -215,32 +216,32 @@ export default function PreviewPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-8`}
+            className={`min-h-screen flex items-center justify-center bg-gradient-to-br ${currentTemplate.gradient} p-4 sm:p-6 lg:p-8`}
           >
-            <div className="max-w-6xl text-center">
+            <div className="max-w-6xl w-full text-center px-4">
               <motion.h1
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-4xl md:text-6xl font-bold mb-4"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 leading-tight"
               >
                 {currentTemplate.title}
               </motion.h1>
-              
+
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="text-xl md:text-2xl mb-12 text-white/90"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-12 text-white/90 whitespace-pre-line break-words overflow-wrap-anywhere"
               >
                 {currentTemplate.message}
               </motion.p>
-              
+
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="grid grid-cols-2 md:grid-cols-3 gap-4"
+                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
               >
                 {currentTemplate.images?.map((img, idx) => (
                   <motion.img
@@ -250,7 +251,7 @@ export default function PreviewPage() {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8 + idx * 0.1 }}
-                    className="rounded-xl shadow-xl w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                    className="rounded-xl shadow-xl w-full h-32 sm:h-40 md:h-48 object-cover hover:scale-105 transition-transform duration-300"
                   />
                 ))}
               </motion.div>
@@ -260,9 +261,9 @@ export default function PreviewPage() {
       </AnimatePresence>
 
       {/* Template type indicator */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-full">
-          <p className="text-sm font-semibold">
+      <div className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-white/10 backdrop-blur-md px-4 sm:px-6 py-2 sm:py-3 rounded-full">
+          <p className="text-xs sm:text-sm font-semibold">
             {currentTemplate.type === 'text-only' && '✍️ Text Only'}
             {currentTemplate.type === 'text-with-image' && '🖼️ Text with Image'}
             {currentTemplate.type === 'text-with-video' && '🎬 Text with Video'}

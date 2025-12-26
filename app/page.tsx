@@ -326,16 +326,16 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="flex-1 flex items-center justify-center p-8"
+                  className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8"
                 >
-                  <div className="text-center space-y-8 max-w-2xl mx-auto">
-                    <div className="text-6xl mb-4">
+                  <div className="text-center space-y-6 sm:space-y-8 max-w-2xl mx-auto px-4">
+                    <div className="text-4xl sm:text-5xl lg:text-6xl mb-4">
                       {selectedDemoTheme === 'love' ? '💕' : selectedDemoTheme === 'birthday' ? '🎂' : '🎨'}
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Choose Your Demo Theme</h2>
-                    <p className="text-white/90 text-lg mb-8">Select a theme to see how your surprise website will look!</p>
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">Choose Your Demo Theme</h2>
+                    <p className="text-white/90 text-base sm:text-lg mb-6 sm:mb-8">Select a theme to see how your surprise website will look!</p>
 
-                    <div className="flex gap-6 justify-center flex-wrap">
+                    <div className="flex gap-4 sm:gap-6 justify-center flex-wrap">
                       {[
                         { id: 'normal', name: 'Normal Theme', emoji: '🎨', desc: 'Classic and elegant' },
                         { id: 'love', name: 'Love Theme', emoji: '💕', desc: 'Romantic and sweet' },
@@ -350,23 +350,23 @@ export default function Home() {
                             setDemoStep('demo')
                             setIsAutoPlaying(true) // Start auto-playing when demo begins
                           }}
-                          className={`px-8 py-6 rounded-2xl border-2 font-semibold transition-all flex flex-col items-center gap-3 min-w-[180px] ${
+                          className={`px-6 sm:px-8 py-4 sm:py-6 rounded-2xl border-2 font-semibold transition-all flex flex-col items-center gap-2 sm:gap-3 min-w-[160px] sm:min-w-[180px] ${
                             selectedDemoTheme === theme.id
                               ? `border-white bg-white/20 text-white shadow-lg`
                               : 'border-white/50 bg-white/10 text-white/80 hover:bg-white/20'
                           }`}
                         >
-                          <span className="text-4xl">{theme.emoji}</span>
-                          <span className="text-lg font-bold">{theme.name}</span>
-                          <span className="text-sm text-white/70">{theme.desc}</span>
+                          <span className="text-3xl sm:text-4xl">{theme.emoji}</span>
+                          <span className="text-base sm:text-lg font-bold">{theme.name}</span>
+                          <span className="text-xs sm:text-sm text-white/70">{theme.desc}</span>
                         </motion.button>
                       ))}
                     </div>
 
-                    <div className="pt-8">
+                    <div className="pt-6 sm:pt-8">
                       <button
                         onClick={() => setShowDemo(false)}
-                        className="text-white/60 hover:text-white text-lg transition-colors"
+                        className="text-white/60 hover:text-white text-base sm:text-lg transition-colors"
                       >
                         Cancel Demo
                       </button>
@@ -382,13 +382,13 @@ export default function Home() {
                   {/* Close Button */}
                   <button
                     onClick={() => setShowDemo(false)}
-                    className="absolute top-4 right-4 z-30 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-black/70 transition-all duration-300"
+                    className="absolute top-3 sm:top-4 right-3 sm:right-4 z-30 w-8 h-8 sm:w-10 sm:h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-black/70 transition-all duration-300"
                     title="Close Demo"
                   >
-                    <FaTimes />
+                    <FaTimes className="text-sm sm:text-base" />
                   </button>
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-3">
-                    <div className="flex items-center gap-2">
+                  <div className="absolute top-3 sm:top-4 left-1/2 -translate-x-1/2 z-30 bg-black/50 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
                       {demoTemplates.map((_, index) => (
                         <motion.div
                           key={index}
@@ -404,12 +404,12 @@ export default function Home() {
                         />
                       ))}
                     </div>
-                    <span className="text-white/80 text-sm font-medium">
+                    <span className="text-white/80 text-xs sm:text-sm font-medium">
                       {currentDemoTemplate + 1} / {demoTemplates.length}
                     </span>
                     <button
                       onClick={() => setIsAutoPlaying(prev => !prev)}
-                      className="text-white/80 hover:text-white text-lg transition-colors ml-2"
+                      className="text-white/80 hover:text-white text-sm sm:text-lg transition-colors ml-1 sm:ml-2"
                       title={isAutoPlaying ? 'Pause auto-play' : 'Resume auto-play'}
                     >
                       {isAutoPlaying ? <FaPause /> : <FaPlay />}
@@ -428,11 +428,11 @@ export default function Home() {
                         prevTemplate()
                       }}
                       disabled={currentDemoTemplate === 0}
-                      className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 w-16 h-16 rounded-full bg-white/90 backdrop-blur-sm border-2 border-white/50 text-purple-600 hover:bg-white hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl shadow-lg ${
+                      className={`absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/90 backdrop-blur-sm border-2 border-white/50 text-purple-600 hover:bg-white hover:shadow-xl transition-all duration-300 flex items-center justify-center text-lg sm:text-2xl shadow-lg ${
                         currentDemoTemplate === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:scale-110'
                       }`}
                     >
-                      <FaArrowLeft />
+                      <FaArrowLeft className="text-sm sm:text-base" />
                     </button>
 
                     {/* Right Navigation Arrow */}
@@ -440,9 +440,9 @@ export default function Home() {
                       onClick={() => {
                         nextTemplate()
                       }}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-16 h-16 rounded-full bg-white/90 backdrop-blur-sm border-2 border-white/50 text-purple-600 hover:bg-white hover:shadow-xl transition-all duration-300 flex items-center justify-center text-2xl shadow-lg hover:scale-110"
+                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/90 backdrop-blur-sm border-2 border-white/50 text-purple-600 hover:bg-white hover:shadow-xl transition-all duration-300 flex items-center justify-center text-lg sm:text-2xl shadow-lg hover:scale-110"
                     >
-                      <FaArrowRight />
+                      <FaArrowRight className="text-sm sm:text-base" />
                     </button>
                   </div>
                 </>
