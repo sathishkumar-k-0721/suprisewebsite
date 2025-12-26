@@ -17,6 +17,12 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
+  "excludeFiles": [
+    "node_modules/@prisma/engines/**",
+    "node_modules/@prisma/client/**",
+    "node_modules/sharp/**",
+    "node_modules/cloudinary/**"
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",

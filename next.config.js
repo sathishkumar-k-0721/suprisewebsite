@@ -10,7 +10,8 @@ const nextConfig = {
     ],
   },
   experimental: {
-    optimizePackageImports: ['framer-motion', 'react-icons', '@prisma/client'],
+    optimizePackageImports: ['framer-motion', 'react-icons'],
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma', 'sharp'],
   },
   webpack: (config, { isServer }) => {
     // Optimize bundle size
@@ -29,8 +30,13 @@ const nextConfig = {
       config.externals.push({
         'utf-8-validate': 'commonjs utf-8-validate',
         'bufferutil': 'commonjs bufferutil',
+        sharp: 'commonjs sharp',
+        '@prisma/client': 'commonjs @prisma/client',
       });
     }
+
+    // Exclude Prisma binary from bundle
+    config.externals.push('prisma');
 
     return config;
   },
