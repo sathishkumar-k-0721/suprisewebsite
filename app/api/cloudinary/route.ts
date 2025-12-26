@@ -10,6 +10,18 @@ cloudinary.config({
 })
 
 export async function POST(req: NextRequest) {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    })
+  }
+
   try {
     // Check if Cloudinary is configured
     if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
@@ -17,7 +29,13 @@ export async function POST(req: NextRequest) {
         !process.env.CLOUDINARY_API_SECRET) {
       return NextResponse.json({
         error: 'Cloudinary not configured'
-      }, { status: 500 })
+      }, {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
     }
 
     const data = await req.formData()
@@ -25,13 +43,25 @@ export async function POST(req: NextRequest) {
     const type: string = data.get('type') as string
 
     if (!file) {
-      return NextResponse.json({ error: 'No file received' }, { status: 400 })
+      return NextResponse.json({ error: 'No file received' }, {
+        status: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
     }
 
     // Validate file size (limit to 50MB for videos, 10MB for others)
     const maxSize = type === 'video' ? 50 * 1024 * 1024 : 10 * 1024 * 1024
     if (file.size > maxSize) {
-      return NextResponse.json({ error: 'File too large' }, { status: 400 })
+      return NextResponse.json({ error: 'File too large' }, {
+        status: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
     }
 
     const bytes = await file.arrayBuffer()
@@ -62,9 +92,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       url: result.secure_url,
       public_id: result.public_id
+    }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
     })
   } catch (error) {
     console.error('Cloudinary upload error:', error)
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    return NextResponse.json({ error: 'Upload failed' }, {
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    })
   }
 }
