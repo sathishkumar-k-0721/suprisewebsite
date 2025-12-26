@@ -1,0 +1,12 @@
+# Exclude large dependencies from Vercel deployment
+node_modules/@prisma/engines/**
+node_modules/@prisma/client/**
+node_modules/sharp/**
+node_modules/cloudinary/**
+
+# Exclude development files
+.env.local
+.env.development
+
+# Exclude build artifacts that aren't needed
+.next/cache/**
