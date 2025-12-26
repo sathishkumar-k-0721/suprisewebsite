@@ -7,7 +7,7 @@ import PageBuilder, { PageContent } from './page-builder'
 
 export default function CreatePage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const [loading, setLoading] = useState(false)
 
   // Check authentication

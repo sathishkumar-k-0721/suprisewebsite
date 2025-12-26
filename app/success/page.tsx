@@ -8,7 +8,6 @@ import { FaCheck, FaCopy, FaEye, FaShareAlt } from 'react-icons/fa'
 
 function SuccessContent() {
   const searchParams = useSearchParams()
-  const websiteId = searchParams.get('id')
   const uniqueUrl = searchParams.get('url')
   const [copied, setCopied] = useState(false)
 

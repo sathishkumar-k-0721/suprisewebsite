@@ -5,7 +5,7 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { FaPlus, FaEye, FaShareAlt, FaSignOutAlt, FaTrash, FaCopy, FaUser, FaBars, FaShoppingCart } from 'react-icons/fa'
+import { FaPlus, FaEye, FaSignOutAlt, FaTrash, FaCopy, FaUser, FaBars } from 'react-icons/fa'
 
 interface Website {
   id: string

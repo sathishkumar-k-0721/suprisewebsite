@@ -72,36 +72,6 @@ export default function Home() {
     { id: 'treasure-hunt', name: 'Treasure Hunt' }
   ]
 
-  const getThemeColors = (theme: string) => {
-    switch (theme) {
-      case 'love':
-        return {
-          primary: 'from-pink-500 to-rose-600',
-          secondary: 'from-pink-100 to-rose-100',
-          accent: 'text-pink-600',
-          bg: 'bg-pink-50'
-        }
-      case 'birthday':
-        return {
-          primary: 'from-yellow-400 to-orange-500',
-          secondary: 'from-yellow-100 to-orange-100',
-          accent: 'text-yellow-600',
-          bg: 'bg-yellow-50'
-        }
-      default:
-        return {
-          primary: 'from-purple-500 to-purple-700',
-          secondary: 'from-purple-100 to-purple-200',
-          accent: 'text-purple-600',
-          bg: 'bg-purple-50'
-        }
-    }
-  }
-
-  const startDemo = () => {
-    setShowDemo(true)
-  }
-
   const nextTemplate = () => {
     if (currentDemoTemplate < demoTemplates.length - 1) {
       setCurrentDemoTemplate(currentDemoTemplate + 1)
@@ -118,8 +88,6 @@ export default function Home() {
       setCurrentDemoTemplate(currentDemoTemplate - 1)
     }
   }
-
-  const themeColors = getThemeColors(selectedDemoTheme)
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-red-50">

@@ -171,27 +171,6 @@ function LoveThemeHearts() {
   );
 }
 
-// Love Theme Wrapper
-function LoveThemeWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative h-full bg-gradient-to-br from-pink-200 via-pink-400 via-rose-300 to-red-300 overflow-hidden">
-      <LoveThemeHearts />
-      {/* Romantic overlay with multiple gradients */}
-      <div className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-red-400/20" />
-      <div className="absolute inset-0 bg-gradient-to-r from-rose-400/10 via-transparent to-pink-400/10" />
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 opacity-5" style={{
-        backgroundImage: `radial-gradient(circle at 25% 25%, rgba(255,20,147,0.3) 2px, transparent 2px),
-                         radial-gradient(circle at 75% 75%, rgba(255,20,147,0.3) 2px, transparent 2px)`,
-        backgroundSize: '50px 50px'
-      }} />
-      <div className="relative z-10">
-        {children}
-      </div>
-    </div>
-  );
-}
-
 // Birthday Theme Animated Elements
 function BirthdayThemeElements() {
   return (
@@ -339,27 +318,6 @@ function BirthdayThemeElements() {
           ✨
         </motion.div>
       ))}
-    </div>
-  );
-}
-
-// Birthday Theme Wrapper
-function BirthdayThemeWrapper({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative h-full bg-gradient-to-br from-yellow-200 via-orange-300 via-pink-300 to-yellow-400 overflow-hidden">
-      <BirthdayThemeElements />
-      {/* Enhanced festive overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-orange-500/20 via-transparent to-yellow-400/30" />
-      <div className="absolute inset-0 bg-gradient-to-r from-pink-400/15 via-transparent to-orange-400/15" />
-      {/* Party pattern overlay */}
-      <div className="absolute inset-0 opacity-10" style={{
-        backgroundImage: `radial-gradient(circle at 20% 20%, rgba(255,165,0,0.4) 3px, transparent 3px),
-                         radial-gradient(circle at 80% 80%, rgba(255,192,203,0.4) 3px, transparent 3px)`,
-        backgroundSize: '60px 60px'
-      }} />
-      <div className="relative z-10">
-        {children}
-      </div>
     </div>
   );
 }
