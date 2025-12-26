@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { title, pages, theme, duration, fromDate, toDate } = await req.json()
+    console.log('Creating website with:', { title, pagesCount: pages?.length, theme, duration })
 
     // Validate required fields
     if (!pages || !Array.isArray(pages) || pages.length === 0) {
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
     // Validate each page has required fields
     for (const page of pages) {
       if (!page.templateId || !page.content) {
+        console.error('Invalid page data:', page)
         return NextResponse.json({ error: 'Each page must have templateId and content' }, { status: 400 })
       }
     }
@@ -53,6 +55,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create website with pages
+    console.log('Creating website in database...')
     const website = await prisma.website.create({
       data: {
         userId: session.user.id,
@@ -75,13 +78,16 @@ export async function POST(req: NextRequest) {
         pages: true
       }
     })
+    console.log('Website created successfully:', website.id)
 
     // Clear cart after successful creation
+    console.log('Clearing user cart...')
     await prisma.cart.deleteMany({
       where: { userId: session.user.id }
     })
 
     // Clear localStorage templates
+    console.log('Website creation completed successfully')
     return NextResponse.json({
       success: true,
       websiteId: website.id,
