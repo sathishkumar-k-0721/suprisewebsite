@@ -41,23 +41,50 @@ export async function GET() {
       })
     }
 
-    // Test Cloudinary connection by listing resources
-    const result = await cloudinary.api.resources({
-      max_results: 1,
-      type: 'upload'
-    })
+    // Test Cloudinary connection by getting account info
+    try {
+      const accountInfo = await cloudinary.api.ping()
+      console.log('Cloudinary ping successful:', accountInfo)
 
-    return NextResponse.json({
-      status: 'success',
-      message: 'Cloudinary connection successful',
-      resources_count: result.resources?.length || 0,
-      environment: 'configured'
-    }, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
+      // Try to get usage stats
+      let usageInfo = null
+      try {
+        usageInfo = await cloudinary.api.usage()
+        console.log('Cloudinary usage info:', usageInfo)
+      } catch (usageError) {
+        console.log('Could not get usage info:', usageError.message)
       }
-    })
+
+      return NextResponse.json({
+        status: 'success',
+        message: 'Cloudinary connection successful',
+        account: accountInfo,
+        usage: usageInfo,
+        supports: {
+          video: usageInfo ? !usageInfo.plan?.restrictions?.video : true,
+          plan: usageInfo?.plan || 'unknown'
+        }
+      }, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
+    } catch (connectionError) {
+      console.error('Cloudinary connection test failed:', connectionError)
+      return NextResponse.json({
+        status: 'error',
+        message: 'Cloudinary connection failed',
+        error: connectionError instanceof Error ? connectionError.message : 'Unknown error',
+        errorType: connectionError instanceof Error ? connectionError.constructor.name : typeof connectionError
+      }, {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
+    }
   } catch (error) {
     console.error('Cloudinary test failed:', error)
     return NextResponse.json({
@@ -162,30 +189,57 @@ export async function POST(req: NextRequest) {
     const publicId = `${nanoid(10)}`
 
     // Upload to Cloudinary using SDK with stream
+    console.log(`Starting ${type} upload to Cloudinary...`, {
+      folder,
+      publicId,
+      resourceType: type === 'video' ? 'video' : type === 'audio' ? 'video' : 'image',
+      fileSize: file.size,
+      maxSize
+    })
+
     const result = await new Promise((resolve, reject) => {
+      const uploadOptions = {
+        folder,
+        public_id: publicId,
+        resource_type: type === 'video' ? 'video' : type === 'audio' ? 'video' : 'image',
+        timeout: type === 'video' ? 300000 : 120000, // 5 minutes for videos, 2 for others
+        chunk_size: 6000000, // 6MB chunks for large files
+        allowed_formats: type === 'video' ? ['mp4', 'mov', 'avi', 'webm', 'm4v'] : 
+                        type === 'audio' ? ['mp3', 'wav', 'ogg', 'm4a'] : 
+                        ['jpg', 'jpeg', 'png', 'gif', 'webp']
+      }
+
+      console.log('Upload options:', uploadOptions)
+
       const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder,
-          public_id: publicId,
-          resource_type: type === 'video' ? 'video' : type === 'audio' ? 'video' : 'image',
-          timeout: 120000, // 2 minute timeout for large videos
-          chunk_size: 6000000, // 6MB chunks for large files
-          allowed_formats: type === 'video' ? ['mp4', 'mov', 'avi', 'webm'] : 
-                          type === 'audio' ? ['mp3', 'wav', 'ogg', 'm4a'] : 
-                          ['jpg', 'jpeg', 'png', 'gif', 'webp']
-        },
+        uploadOptions,
         (error, result) => {
           if (error) {
             console.error('Cloudinary upload error:', {
               message: error.message,
               http_code: error.http_code,
-              name: error.name
+              name: error.name,
+              type: type,
+              fileSize: file.size
             })
-            reject(new Error(`Cloudinary upload failed: ${error.message} (HTTP ${error.http_code || 'unknown'})`))
+
+            // Special handling for video uploads that might be blocked by free tier
+            if (type === 'video' && error.http_code === 403) {
+              reject(new Error(`Video upload blocked: Your Cloudinary account may not support video uploads. Please upgrade to a paid plan or contact Cloudinary support. (HTTP 403)`))
+            } else {
+              reject(new Error(`Cloudinary upload failed: ${error.message} (HTTP ${error.http_code || 'unknown'})`))
+            }
           } else if (!result || !result.secure_url) {
             console.error('Cloudinary upload result invalid:', result)
             reject(new Error('Cloudinary upload failed: Invalid response'))
           } else {
+            console.log('Cloudinary upload successful:', {
+              type: type,
+              url: result.secure_url,
+              public_id: result.public_id,
+              bytes: result.bytes,
+              format: result.format
+            })
             resolve(result)
           }
         }
