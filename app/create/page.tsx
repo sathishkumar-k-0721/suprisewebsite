@@ -62,13 +62,25 @@ export default function CreatePage() {
           body: formData
         })
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: 'Upload failed' }))
-          throw new Error(`File upload failed: ${errorData.error || response.statusText}`)
+        let responseData
+        try {
+          responseData = await response.json()
+        } catch (parseError) {
+          console.error('Failed to parse response JSON:', parseError)
+          throw new Error(`File upload failed: Invalid response format (${response.status})`)
         }
 
-        const data = await response.json()
-        return data.url
+        if (!response.ok) {
+          throw new Error(`File upload failed: ${responseData.error || response.statusText}`)
+        }
+
+        // Check if the response contains the expected URL
+        if (!responseData.url) {
+          console.error('Response missing URL:', responseData)
+          throw new Error(`File upload failed: ${responseData.error || 'No URL in response'}`)
+        }
+
+        return responseData.url
       }
 
       // Prepare content for each page with uploaded file URLs
