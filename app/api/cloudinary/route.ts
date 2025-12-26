@@ -9,6 +9,41 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
+// Test Cloudinary connection
+export async function GET() {
+  try {
+    // Test Cloudinary connection by listing resources
+    const result = await cloudinary.api.resources({
+      max_results: 1,
+      type: 'upload'
+    })
+
+    return NextResponse.json({
+      status: 'success',
+      message: 'Cloudinary connection successful',
+      resources_count: result.resources?.length || 0
+    }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    })
+  } catch (error) {
+    console.error('Cloudinary test failed:', error)
+    return NextResponse.json({
+      status: 'error',
+      message: 'Cloudinary connection failed',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, {
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    })
+  }
+}
+
 export async function POST(req: NextRequest) {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -17,7 +52,8 @@ export async function POST(req: NextRequest) {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Credentials': 'true',
       },
     })
   }
@@ -27,6 +63,11 @@ export async function POST(req: NextRequest) {
     if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
         !process.env.CLOUDINARY_API_KEY ||
         !process.env.CLOUDINARY_API_SECRET) {
+      console.error('Cloudinary environment variables missing:', {
+        cloudName: !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        apiKey: !!process.env.CLOUDINARY_API_KEY,
+        apiSecret: !!process.env.CLOUDINARY_API_SECRET
+      })
       return NextResponse.json({
         error: 'Cloudinary not configured'
       }, {
@@ -84,13 +125,20 @@ export async function POST(req: NextRequest) {
           folder,
           public_id: publicId,
           resource_type: type === 'video' ? 'video' : type === 'audio' ? 'video' : 'image',
-          timeout: 60000, // 60 second timeout for uploads
-          chunk_size: 6000000 // 6MB chunks for large files
+          timeout: 120000, // 2 minute timeout for large videos
+          chunk_size: 6000000, // 6MB chunks for large files
+          allowed_formats: type === 'video' ? ['mp4', 'mov', 'avi', 'webm'] : 
+                          type === 'audio' ? ['mp3', 'wav', 'ogg', 'm4a'] : 
+                          ['jpg', 'jpeg', 'png', 'gif', 'webp']
         },
         (error, result) => {
           if (error) {
-            console.error('Cloudinary upload error:', error)
-            reject(new Error(`Cloudinary upload failed: ${error.message || 'Unknown error'}`))
+            console.error('Cloudinary upload error:', {
+              message: error.message,
+              http_code: error.http_code,
+              name: error.name
+            })
+            reject(new Error(`Cloudinary upload failed: ${error.message} (HTTP ${error.http_code || 'unknown'})`))
           } else if (!result || !result.secure_url) {
             console.error('Cloudinary upload result invalid:', result)
             reject(new Error('Cloudinary upload failed: Invalid response'))
