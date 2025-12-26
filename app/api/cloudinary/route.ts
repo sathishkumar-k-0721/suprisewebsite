@@ -52,7 +52,7 @@ export async function GET() {
         usageInfo = await cloudinary.api.usage()
         console.log('Cloudinary usage info:', usageInfo)
       } catch (usageError) {
-        console.log('Could not get usage info:', usageError.message)
+        console.log('Could not get usage info:', usageError instanceof Error ? usageError.message : 'Unknown error')
       }
 
       return NextResponse.json({
@@ -198,7 +198,7 @@ export async function POST(req: NextRequest) {
     })
 
     const result = await new Promise((resolve, reject) => {
-      const uploadOptions = {
+      const uploadOptions: any = {
         folder,
         public_id: publicId,
         resource_type: type === 'video' ? 'video' : type === 'audio' ? 'video' : 'image',
