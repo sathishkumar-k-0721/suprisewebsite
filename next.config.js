@@ -11,11 +11,10 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['framer-motion', 'react-icons'],
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma', 'sharp', 'cloudinary', 'bcryptjs'],
+    serverComponentsExternalPackages: ['prisma', 'sharp', 'cloudinary', 'bcryptjs'],
     outputFileTracingExcludes: {
       '**/*': [
         'node_modules/@prisma/engines/**/*',
-        'node_modules/@prisma/client/**/*',
         'node_modules/sharp/**/*',
         'node_modules/cloudinary/**/*',
         'node_modules/bcryptjs/**/*',
@@ -39,7 +38,6 @@ const nextConfig = {
 
     // Exclude all large packages from bundles
     config.externals.push({
-      '@prisma/client': 'commonjs @prisma/client',
       'prisma': 'commonjs prisma',
       'sharp': 'commonjs sharp',
       'cloudinary': 'commonjs cloudinary',
