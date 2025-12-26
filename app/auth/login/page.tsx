@@ -45,7 +45,7 @@ function LoginForm() {
         const callbackUrl = searchParams.get('callbackUrl') || '/templates'
         router.push(callbackUrl)
       }
-    } catch (_err: any) {
+    } catch {
       setError('An error occurred. Please try again.')
     } finally {
       setLoading(false)

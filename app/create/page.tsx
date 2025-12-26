@@ -51,13 +51,13 @@ export default function CreatePage() {
     setLoading(true)
 
     try {
-      // Upload files and get URLs
+      // Upload files to Cloudinary via our API
       const uploadFile = async (file: File, type: string): Promise<string> => {
         const formData = new FormData()
         formData.append('file', file)
         formData.append('type', type)
 
-        const response = await fetch('/api/upload', {
+        const response = await fetch('/api/cloudinary', {
           method: 'POST',
           body: formData
         })
@@ -74,7 +74,6 @@ export default function CreatePage() {
       // Prepare content for each page with uploaded file URLs
       const pagesData = await Promise.all(pages.map(async (page, index) => {
         try {
-          console.log(`Processing page ${index + 1}/${pages.length}: ${page.templateId}`)
           const imageUrl = page.image ? await uploadFile(page.image, 'image') : null
           const videoUrl = page.video ? await uploadFile(page.video, 'video') : null
           const audioUrl = page.audio ? await uploadFile(page.audio, 'audio') : null

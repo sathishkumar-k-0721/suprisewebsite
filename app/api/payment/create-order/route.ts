@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const { amount, selection } = await request.json()
+    const { amount } = await request.json()
 
     if (!amount || amount <= 0) {
       return NextResponse.json(

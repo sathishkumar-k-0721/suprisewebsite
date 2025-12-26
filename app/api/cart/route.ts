@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { prisma } from '@/lib/prisma'
 
 // GET - Get user's cart
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession()
     
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
 }
 
 // DELETE - Clear cart
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   try {
     const session = await getServerSession()
     
