@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
+import { uploadToCloudinary } from '@/lib/cloudinary'
 import { nanoid } from 'nanoid'
 
 export async function POST(req: NextRequest) {
   try {
+    // Check if Cloudinary is configured
+    if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
+        !process.env.CLOUDINARY_API_KEY ||
+        !process.env.CLOUDINARY_API_SECRET ||
+        process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME === 'your_cloud_name' ||
+        process.env.CLOUDINARY_API_KEY === 'your_api_key' ||
+        process.env.CLOUDINARY_API_SECRET === 'your_api_secret') {
+      return NextResponse.json({
+        error: 'File upload service not configured. Please set up Cloudinary credentials in environment variables.'
+      }, { status: 500 })
+    }
+
     const data = await req.formData()
     const file: File | null = data.get('file') as unknown as File
     const type: string = data.get('type') as string
@@ -72,26 +83,27 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads')
-    try {
-      await mkdir(uploadsDir, { recursive: true })
-    } catch (_error) {
-      // Directory might already exist, continue
-    }
+    // Determine resource type for Cloudinary
+    const resourceType = type === 'video' ? 'video' : type === 'audio' ? 'video' : 'image'
 
     // Generate unique filename
     const extension = file.name.split('.').pop()
     const filename = `${nanoid(10)}.${extension}`
-    const filepath = join(uploadsDir, filename)
 
-    // Write file
-    await writeFile(filepath, buffer)
+    // Upload to Cloudinary
+    const result = await uploadToCloudinary(buffer, {
+      folder: `surprise-website-uploads/${type}s`,
+      public_id: filename,
+      resource_type: resourceType as 'image' | 'video' | 'auto'
+    }) as any
 
-    // Return the public URL
-    const url = `/uploads/${filename}`
-
-    return NextResponse.json({ url })
+    // Return the Cloudinary URL
+    return NextResponse.json({
+      url: result.secure_url,
+      public_id: result.public_id,
+      width: result.width,
+      height: result.height
+    })
   } catch (error) {
     console.error('Upload error:', error)
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 })

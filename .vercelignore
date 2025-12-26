@@ -2,7 +2,6 @@
 node_modules/@prisma/engines/**
 node_modules/@prisma/client/**
 node_modules/sharp/**
-node_modules/cloudinary/**
 
 # Exclude development files
 .env.local
