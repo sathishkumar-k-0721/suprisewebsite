@@ -109,19 +109,7 @@ export async function POST(req: NextRequest) {
     headers: Object.fromEntries(req.headers.entries())
   })
 
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    console.log('Handling OPTIONS preflight request')
-    return new NextResponse(null, {
-      status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Credentials': 'true',
-      },
-    })
-  }
+  let responseSent = false
 
   try {
     console.log('Checking Cloudinary configuration...')
@@ -197,62 +185,74 @@ export async function POST(req: NextRequest) {
       maxSize
     })
 
-    const result = await new Promise((resolve, reject) => {
-      const uploadOptions: any = {
-        folder,
-        public_id: publicId,
-        resource_type: type === 'video' ? 'video' : type === 'audio' ? 'video' : 'image',
-        timeout: type === 'video' ? 300000 : 120000, // 5 minutes for videos, 2 for others
-        chunk_size: 6000000, // 6MB chunks for large files
-        allowed_formats: type === 'video' ? ['mp4', 'mov', 'avi', 'webm', 'm4v'] : 
-                        type === 'audio' ? ['mp3', 'wav', 'ogg', 'm4a'] : 
-                        ['jpg', 'jpeg', 'png', 'gif', 'webp']
-      }
+    // Create a timeout promise
+    const timeoutPromise = new Promise((_, reject) => {
+      const timeoutMs = type === 'video' ? 280000 : 100000 // Slightly less than Vercel limit
+      setTimeout(() => {
+        reject(new Error(`Upload timeout: ${type} upload took longer than ${timeoutMs/1000} seconds`))
+      }, timeoutMs)
+    })
 
-      console.log('Upload options:', uploadOptions)
-
-      const uploadStream = cloudinary.uploader.upload_stream(
-        uploadOptions,
-        (error, result) => {
-          if (error) {
-            console.error('Cloudinary upload error:', {
-              message: error.message,
-              http_code: error.http_code,
-              name: error.name,
-              type: type,
-              fileSize: file.size
-            })
-
-            // Special handling for video uploads that might be blocked by free tier
-            if (type === 'video' && error.http_code === 403) {
-              reject(new Error(`Video upload blocked: Your Cloudinary account may not support video uploads. Please upgrade to a paid plan or contact Cloudinary support. (HTTP 403)`))
-            } else {
-              reject(new Error(`Cloudinary upload failed: ${error.message} (HTTP ${error.http_code || 'unknown'})`))
-            }
-          } else if (!result || !result.secure_url) {
-            console.error('Cloudinary upload result invalid:', result)
-            reject(new Error('Cloudinary upload failed: Invalid response'))
-          } else {
-            console.log('Cloudinary upload successful:', {
-              type: type,
-              url: result.secure_url,
-              public_id: result.public_id,
-              bytes: result.bytes,
-              format: result.format
-            })
-            resolve(result)
-          }
+    // Race between upload and timeout
+    const result = await Promise.race([
+      new Promise((resolve, reject) => {
+        const uploadOptions: any = {
+          folder,
+          public_id: publicId,
+          resource_type: type === 'video' ? 'video' : type === 'audio' ? 'video' : 'image',
+          timeout: type === 'video' ? 240000 : 90000, // 4 minutes for videos, 1.5 for others
+          chunk_size: 6000000, // 6MB chunks for large files
+          allowed_formats: type === 'video' ? ['mp4', 'mov', 'avi', 'webm', 'm4v'] : 
+                          type === 'audio' ? ['mp3', 'wav', 'ogg', 'm4a'] : 
+                          ['jpg', 'jpeg', 'png', 'gif', 'webp']
         }
-      )
 
-      // Handle stream errors
-      uploadStream.on('error', (error) => {
-        console.error('Upload stream error:', error)
-        reject(new Error(`Upload stream failed: ${error.message || 'Unknown error'}`))
-      })
+        console.log('Upload options:', uploadOptions)
 
-      uploadStream.end(buffer)
-    }) as any
+        const uploadStream = cloudinary.uploader.upload_stream(
+          uploadOptions,
+          (error, result) => {
+            if (error) {
+              console.error('Cloudinary upload error:', {
+                message: error.message,
+                http_code: error.http_code,
+                name: error.name,
+                type: type,
+                fileSize: file.size
+              })
+
+              // Special handling for video uploads that might be blocked by free tier
+              if (type === 'video' && error.http_code === 403) {
+                reject(new Error(`Video upload blocked: Your Cloudinary account may not support video uploads. Please upgrade to a paid plan or contact Cloudinary support. (HTTP 403)`))
+              } else {
+                reject(new Error(`Cloudinary upload failed: ${error.message} (HTTP ${error.http_code || 'unknown'})`))
+              }
+            } else if (!result || !result.secure_url) {
+              console.error('Cloudinary upload result invalid:', result)
+              reject(new Error('Cloudinary upload failed: Invalid response'))
+            } else {
+              console.log('Cloudinary upload successful:', {
+                type: type,
+                url: result.secure_url,
+                public_id: result.public_id,
+                bytes: result.bytes,
+                format: result.format
+              })
+              resolve(result)
+            }
+          }
+        )
+
+        // Handle stream errors
+        uploadStream.on('error', (error) => {
+          console.error('Upload stream error:', error)
+          reject(new Error(`Upload stream failed: ${error.message || 'Unknown error'}`))
+        })
+
+        uploadStream.end(buffer)
+      }),
+      timeoutPromise
+    ]) as any
 
     console.log('Upload successful:', { 
       url: result.secure_url, 
@@ -260,6 +260,12 @@ export async function POST(req: NextRequest) {
       bytes: result.bytes 
     })
 
+    if (responseSent) {
+      console.error('Response already sent, cannot send success response')
+      return
+    }
+
+    responseSent = true
     return NextResponse.json({
       url: result.secure_url,
       public_id: result.public_id
@@ -276,6 +282,13 @@ export async function POST(req: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
       type: typeof error
     })
+
+    if (responseSent) {
+      console.error('Response already sent, cannot send error response')
+      return
+    }
+
+    responseSent = true
     const errorMessage = error instanceof Error ? error.message : 'Upload failed'
     return NextResponse.json({ 
       error: errorMessage,
