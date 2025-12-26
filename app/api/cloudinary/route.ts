@@ -42,6 +42,13 @@ export async function POST(req: NextRequest) {
     const file: File | null = data.get('file') as unknown as File
     const type: string = data.get('type') as string
 
+    console.log('Upload request received:', { 
+      fileName: file?.name, 
+      fileSize: file?.size, 
+      fileType: file?.type,
+      uploadType: type 
+    })
+
     if (!file) {
       return NextResponse.json({ error: 'No file received' }, {
         status: 400,
@@ -76,18 +83,37 @@ export async function POST(req: NextRequest) {
         {
           folder,
           public_id: publicId,
-          resource_type: type === 'video' ? 'video' : type === 'audio' ? 'video' : 'image'
+          resource_type: type === 'video' ? 'video' : type === 'audio' ? 'video' : 'image',
+          timeout: 60000, // 60 second timeout for uploads
+          chunk_size: 6000000 // 6MB chunks for large files
         },
         (error, result) => {
           if (error) {
-            reject(error)
+            console.error('Cloudinary upload error:', error)
+            reject(new Error(`Cloudinary upload failed: ${error.message || 'Unknown error'}`))
+          } else if (!result || !result.secure_url) {
+            console.error('Cloudinary upload result invalid:', result)
+            reject(new Error('Cloudinary upload failed: Invalid response'))
           } else {
             resolve(result)
           }
         }
       )
+
+      // Handle stream errors
+      uploadStream.on('error', (error) => {
+        console.error('Upload stream error:', error)
+        reject(new Error(`Upload stream failed: ${error.message || 'Unknown error'}`))
+      })
+
       uploadStream.end(buffer)
     }) as any
+
+    console.log('Upload successful:', { 
+      url: result.secure_url, 
+      public_id: result.public_id,
+      bytes: result.bytes 
+    })
 
     return NextResponse.json({
       url: result.secure_url,
@@ -100,7 +126,11 @@ export async function POST(req: NextRequest) {
     })
   } catch (error) {
     console.error('Cloudinary upload error:', error)
-    return NextResponse.json({ error: 'Upload failed' }, {
+    const errorMessage = error instanceof Error ? error.message : 'Upload failed'
+    return NextResponse.json({ 
+      error: errorMessage,
+      details: error instanceof Error ? error.stack : 'Unknown error'
+    }, {
       status: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
