@@ -11,13 +11,12 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['framer-motion', 'react-icons'],
-    serverComponentsExternalPackages: ['prisma', 'sharp', 'cloudinary', 'bcryptjs'],
+    serverComponentsExternalPackages: ['prisma', 'sharp', 'cloudinary'],
     outputFileTracingExcludes: {
       '**/*': [
         'node_modules/@prisma/engines/**/*',
         'node_modules/sharp/**/*',
         'node_modules/cloudinary/**/*',
-        'node_modules/bcryptjs/**/*',
       ],
     },
     outputFileTracingRoot: undefined,
@@ -41,7 +40,6 @@ const nextConfig = {
       'prisma': 'commonjs prisma',
       'sharp': 'commonjs sharp',
       'cloudinary': 'commonjs cloudinary',
-      'bcryptjs': 'commonjs bcryptjs',
       'next-auth': 'commonjs next-auth',
       'razorpay': 'commonjs razorpay',
       'react-dropzone': 'commonjs react-dropzone',
