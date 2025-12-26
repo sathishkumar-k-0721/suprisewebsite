@@ -5,8 +5,6 @@ import { prisma } from '@/lib/prisma'
 import { nanoid } from 'nanoid'
 import { Prisma } from '@prisma/client'
 
-export const runtime = 'edge'
-
 interface PageData {
   templateId: string
   content: Prisma.InputJsonValue
