@@ -2,9 +2,15 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { FaGift, FaArrowRight, FaLock, FaKey, FaTimes, FaArrowLeft, FaPause, FaPlay } from 'react-icons/fa'
-import TemplatePreview from '@/components/TemplatePreview'
+import { useState, useEffect, Suspense } from 'react'
+import { FaGift, FaArrowRight, FaTimes, FaArrowLeft, FaPause, FaPlay } from 'react-icons/fa'
+import dynamic from 'next/dynamic'
+
+// Dynamically import heavy components to reduce initial bundle size
+const TemplatePreview = dynamic(() => import('@/components/TemplatePreview'), {
+  suspense: true,
+  loading: () => <div className="w-full h-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">Loading preview...</div>
+})
 
 export default function Home() {
   const [showDemo, setShowDemo] = useState(false)
@@ -419,7 +425,9 @@ export default function Home() {
                   {/* Demo Content - Full Template Preview */}
                   <div className="flex-1 overflow-hidden relative">
                     <div className="absolute inset-0 w-full h-full">
-                      <TemplatePreview templateId={`${demoTemplates[currentDemoTemplate].id}-${selectedDemoTheme}`} fullScreen={true} />
+                      <Suspense fallback={<div className="w-full h-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">Loading preview...</div>}>
+                        <TemplatePreview templateId={`${demoTemplates[currentDemoTemplate].id}-${selectedDemoTheme}`} fullScreen={true} />
+                      </Suspense>
                     </div>
 
                     {/* Left Navigation Arrow */}
