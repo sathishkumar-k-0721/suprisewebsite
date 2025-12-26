@@ -12,6 +12,35 @@ cloudinary.config({
 // Test Cloudinary connection
 export async function GET() {
   try {
+    console.log('Testing Cloudinary connection...')
+    console.log('Environment check:', {
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? 'set' : 'missing',
+      apiKey: process.env.CLOUDINARY_API_KEY ? 'set' : 'missing',
+      apiSecret: process.env.CLOUDINARY_API_SECRET ? 'set' : 'missing',
+      nodeEnv: process.env.NODE_ENV
+    })
+
+    // Check if Cloudinary is configured
+    if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
+        !process.env.CLOUDINARY_API_KEY ||
+        !process.env.CLOUDINARY_API_SECRET) {
+      return NextResponse.json({
+        status: 'error',
+        message: 'Cloudinary environment variables not configured',
+        environment: {
+          cloudName: !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+          apiKey: !!process.env.CLOUDINARY_API_KEY,
+          apiSecret: !!process.env.CLOUDINARY_API_SECRET
+        }
+      }, {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
+      })
+    }
+
     // Test Cloudinary connection by listing resources
     const result = await cloudinary.api.resources({
       max_results: 1,
@@ -21,7 +50,8 @@ export async function GET() {
     return NextResponse.json({
       status: 'success',
       message: 'Cloudinary connection successful',
-      resources_count: result.resources?.length || 0
+      resources_count: result.resources?.length || 0,
+      environment: 'configured'
     }, {
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -33,7 +63,8 @@ export async function GET() {
     return NextResponse.json({
       status: 'error',
       message: 'Cloudinary connection failed',
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      errorType: error instanceof Error ? error.constructor.name : typeof error
     }, {
       status: 500,
       headers: {
@@ -45,8 +76,15 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  console.log('Cloudinary POST request received:', {
+    method: req.method,
+    url: req.url,
+    headers: Object.fromEntries(req.headers.entries())
+  })
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
+    console.log('Handling OPTIONS preflight request')
     return new NextResponse(null, {
       status: 200,
       headers: {
@@ -59,6 +97,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    console.log('Checking Cloudinary configuration...')
     // Check if Cloudinary is configured
     if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
         !process.env.CLOUDINARY_API_KEY ||
@@ -66,10 +105,12 @@ export async function POST(req: NextRequest) {
       console.error('Cloudinary environment variables missing:', {
         cloudName: !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
         apiKey: !!process.env.CLOUDINARY_API_KEY,
-        apiSecret: !!process.env.CLOUDINARY_API_SECRET
+        apiSecret: !!process.env.CLOUDINARY_API_SECRET,
+        env: process.env.NODE_ENV
       })
       return NextResponse.json({
-        error: 'Cloudinary not configured'
+        error: 'Cloudinary not configured',
+        details: 'Environment variables missing'
       }, {
         status: 500,
         headers: {
@@ -78,6 +119,8 @@ export async function POST(req: NextRequest) {
         }
       })
     }
+
+    console.log('Cloudinary config found, processing form data...')
 
     const data = await req.formData()
     const file: File | null = data.get('file') as unknown as File
@@ -173,11 +216,17 @@ export async function POST(req: NextRequest) {
       }
     })
   } catch (error) {
-    console.error('Cloudinary upload error:', error)
+    console.error('Cloudinary upload error caught:', {
+      error: error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      type: typeof error
+    })
     const errorMessage = error instanceof Error ? error.message : 'Upload failed'
     return NextResponse.json({ 
       error: errorMessage,
-      details: error instanceof Error ? error.stack : 'Unknown error'
+      details: error instanceof Error ? error.stack : 'Unknown error',
+      timestamp: new Date().toISOString()
     }, {
       status: 500,
       headers: {
