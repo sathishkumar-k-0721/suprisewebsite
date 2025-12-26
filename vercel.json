@@ -1,20 +1,16 @@
 {
   "functions": {
     "app/**/*.js": {
-      "maxDuration": 10,
-      "runtime": "nodejs18.x"
+      "maxDuration": 10
     },
     "app/**/*.ts": {
-      "maxDuration": 10,
-      "runtime": "nodejs18.x"
+      "maxDuration": 10
     },
     "pages/**/*.js": {
-      "maxDuration": 10,
-      "runtime": "nodejs18.x"
+      "maxDuration": 10
     },
     "pages/**/*.ts": {
-      "maxDuration": 10,
-      "runtime": "nodejs18.x"
+      "maxDuration": 10
     }
   },
   "regions": ["fra1"],
